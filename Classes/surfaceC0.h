@@ -38,4 +38,6 @@ public:
 
 	bool virtual IsWrappedU();
     bool virtual IsWrappedV();
+
+	bool ReplaceControlPoint(int idx, Figure *cp);
 };

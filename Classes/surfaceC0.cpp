@@ -185,6 +185,17 @@ bool SurfaceC0::IsWrappedU() { return CheckWrappedU(3, 0); }
 
 bool SurfaceC0::IsWrappedV() { return CheckWrappedV(12, 0); }
 
+bool SurfaceC0::ReplaceControlPoint(int idx, Figure *cp) { 
+  if (idx >= patches.size() * 16)
+    return false;
+
+  int patchIdx = idx / 16;
+  int cpIdx = idx % 16;
+  bool result = patches[patchIdx]->ReplaceControlPoint(cpIdx, cp);
+  RefreshBuffers();
+  return result;
+}
+
 SurfaceC0::SurfaceC0(glm::vec3 position, std::string name)
 	: Figure(std::make_tuple(std::vector<GLfloat>(), std::vector<GLuint>()), name, position, true) {}
 

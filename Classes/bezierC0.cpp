@@ -114,6 +114,15 @@ bool BezierC0::RemoveControlPoint(int idx) {
   return true;
 }
 
+bool BezierC0::ReplaceControlPoint(int idx, Figure *cp) 
+{
+  if (idx >= controlPoints.size())
+    return false;
+  controlPoints[idx] = cp;
+  RefreshBuffers();
+  return true;
+}
+
 void BezierC0::ClearControlPoints() {
   controlPoints.clear();
   RefreshBuffers();

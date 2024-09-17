@@ -14,6 +14,15 @@ void BicubicPatch::RefreshBuffers()
         std::get<1>(data).size() * sizeof(GLuint));
 }
 
+bool BicubicPatch::ReplaceControlPoint(int idx, Figure *cp) { 
+  if (idx >= controlPoints.size())
+    return false;
+
+  controlPoints[idx] = cp;
+  RefreshBuffers();
+  return true;
+}
+
 void BicubicPatch::Render(int colorLoc, int modelLoc, bool grayscale)
 {
     vao.Bind();

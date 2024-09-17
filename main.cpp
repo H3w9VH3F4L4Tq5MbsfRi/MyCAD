@@ -76,6 +76,8 @@ void deselectSurface(bool deleting = false);
 void recalculateCenter();
 void loadScene();
 void saveScene();
+void replaceCpsInCurves(Figure *newCp);
+void replaceCpsInSurfaces(Figure *newCp);
 
 glm::vec3 centerTranslation(0.f);
 glm::vec3 centerScale(1.f);
@@ -739,8 +741,21 @@ int main() {
               surfaces[selectedSurfaceIdx]->CreateImgui();
           }
 
-          // multiple figures manipulation
+          // multiple figures merging & manipulation
           if (selected.size() > 1 && selectedCurveIdx == -1 && selectedSurfaceIdx == -1) {
+            if (ImGui::Button("Merge selected")) 
+            {
+              Figure *mergeResult = new Point(center->GetPosition());
+              replaceCpsInCurves(mergeResult);
+              replaceCpsInSurfaces(mergeResult);
+              for (int i = selected.size() - 1; i >= 0; i--) {
+                figures.erase(figures.begin() + selected[i]);
+              }
+              mergeResult->selected = true;
+              figures.push_back(mergeResult);
+              recalculateSelected(true);
+            }
+
             bool change = false;
             // translation
 			ImGui::SeparatorText("Center translation");
@@ -995,15 +1010,12 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action,
       clickingOutCurve = false;
       deselectFigures();
     }
+
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
+      renderGrid = !renderGrid;
   }
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     clickingOutCurve = false;
-  if (key == GLFW_KEY_G && action == GLFW_PRESS) 
-  {
-    renderGrid = !renderGrid;
-    std::cout << "Grid: " << (renderGrid ? "on" : "off") << std::endl;
-  }
-
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action,
@@ -1353,4 +1365,31 @@ void saveScene()
      
     for (SurfaceC0 *surf : surfaces) 
       surf->Serialize(scene, findPointIndexes(surf->GetControlPoints()));
+}
+
+void replaceCpsInCurves(Figure *newCp) {
+  for (int i = 0; i < selected.size(); i++) {
+    for (int j = 0; j < curves.size(); j++) {
+      std::vector<Figure *> cps = curves[j]->GetControlPoints();
+      for (int k = 0; k < cps.size(); k++) {
+        if (figures[selected[i]] == cps[k]) {
+          curves[j]->ReplaceControlPoint(k, newCp);
+        }
+      }
+    }
+  }
+}
+
+void replaceCpsInSurfaces(Figure *newCp) 
+{
+  for (int i = 0; i < selected.size(); i++) {
+    for (int j = 0; j < surfaces.size(); j++) {
+      std::vector<Figure *> cps = surfaces[j]->GetControlPoints();
+      for (int k = 0; k < cps.size(); k++) {
+        if (figures[selected[i]] == cps[k]) {
+          surfaces[j]->ReplaceControlPoint(k, newCp);
+        }
+      }
+    }
+  }
 }
