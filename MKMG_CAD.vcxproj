@@ -160,6 +160,7 @@
     <ClCompile Include="Classes\VAO.cpp" />
     <ClCompile Include="Classes\VBO.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="Classes\torus.h" />
     <ClInclude Include="Classes\VAO.h" />
     <ClInclude Include="Classes\VBO.h" />
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />

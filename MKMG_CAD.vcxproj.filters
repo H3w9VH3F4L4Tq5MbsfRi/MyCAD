@@ -117,6 +117,9 @@
     <ClCompile Include="Classes\VBO.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>Source Files\assets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -198,6 +201,9 @@
       <Filter>Header Files\assets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\VBO.h">
+      <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
   </ItemGroup>
