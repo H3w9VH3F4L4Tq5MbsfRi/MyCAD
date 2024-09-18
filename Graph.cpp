@@ -1,5 +1,5 @@
 #include "Graph.h"
-//#include <iostream>
+#include <iostream>
 
 Graph::Graph() {
   vertices = std::vector<Figure *>();
@@ -168,4 +168,41 @@ Graph::Graph(SurfaceC0 &surface) {
   }
 
   //std::cout << std::endl;
+}
+
+Graph::Graph(std::vector<Graph *> &graphs) {
+  if (graphs.size() == 0)
+    return;
+
+  this->vertices = graphs[0]->vertices;
+  this->adjList = graphs[0]->adjList;
+
+  for (int i = 1; i < graphs.size(); i++) {
+    std::vector<int> newIndices = {};
+
+    for (int j = 0; j < graphs[i]->vertices.size(); j++) {
+      bool found = false;
+      for (int k = 0; k < this->vertices.size(); k++) {
+        if (graphs[i]->vertices[j] == this->vertices[k]) {
+          found = true;
+          newIndices.push_back(k);
+          break;
+        }
+      }
+      if (!found) {
+        newIndices.push_back(this->vertices.size());
+        this->vertices.push_back(graphs[i]->vertices[j]);
+        this->adjList.push_back({});
+      } else {
+        std::cout << "Duplicate found." << std::endl;
+      }
+    }
+
+    for (int j = 0; j < graphs[i]->adjList.size(); j++) {
+      for (int k = 0; k < graphs[i]->adjList[j].size(); k++) {
+        this->adjList[newIndices[j]].push_back(
+            newIndices[graphs[i]->adjList[j][k]]);
+      }
+    }
+  }
 }
