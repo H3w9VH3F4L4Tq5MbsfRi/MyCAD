@@ -33,6 +33,7 @@
 
 #include <Serializer.h>
 #include <filesystem>
+#include "Graph.h"
 
 const float near = 0.1f;
 const float far = 100.0f;
@@ -1314,6 +1315,8 @@ void loadScene() {
         tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
         tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, cps);
     surfaces.push_back(s);
+
+    //new Graph(*s);
   }
 
   // import surface C2

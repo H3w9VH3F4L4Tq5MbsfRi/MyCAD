@@ -10,5 +10,6 @@ private:
   std::vector<std::vector<int>> adjList;
 
 public:
+  Graph();
   Graph(SurfaceC0 &surface);
 };
