@@ -117,7 +117,7 @@
     <ClCompile Include="Classes\VBO.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
-    <ClCompile Include="Graph.cpp">
+    <ClCompile Include="Classes\Graph.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
   </ItemGroup>
@@ -203,7 +203,7 @@
     <ClInclude Include="Classes\VBO.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
-    <ClInclude Include="Graph.h">
+    <ClInclude Include="Classes\Graph.h">
       <Filter>Header Files\assets</Filter>
     </ClInclude>
   </ItemGroup>

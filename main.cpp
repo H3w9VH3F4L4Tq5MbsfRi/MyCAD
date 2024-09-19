@@ -72,8 +72,8 @@ void updateSurfacesSelectedChange();
 std::vector<int> GetClickedFigures(GLFWwindow *window);
 void deselectCurve(bool deleting = false);
 void curveCreation();
-void deselectFigures();
-void deselectSurface(bool deleting = false);
+void deselectFigures();;
+void deselectSurfaces();
 void recalculateCenter();
 void loadScene();
 void saveScene();
@@ -96,8 +96,9 @@ const float initParam1 = 3;
 const float initParam2 = 2;
 
 std::vector<SurfaceC0*> surfaces;
-int selectedSurfaceIdx = -1;
+std::vector<int> selectedSurfaces;
 bool checkIfSelectedArePartOfSurface();
+void recalculateSelectedSurfaces();
 
 MG1::SceneSerializer serializer;
 std::string filePath = "Scenes\\referenceScene.json";
@@ -401,10 +402,9 @@ int main() {
                         figures.push_back(newFigures[i]);
                     }
                     surfaces.push_back(plane);
-                    deselectSurface();
-                    selectedSurfaceIdx = surfaces.size() - 1;
-                    surfaces[selectedSurfaceIdx]->selected = true;
-
+                    deselectSurfaces();
+                    plane->selected = true;
+                    recalculateSelectedSurfaces();
                     PxSegments = initXsegments;
                     PzSegments = initZsegments;
                     Pparam1 = initParam1;
@@ -442,9 +442,9 @@ int main() {
                         figures.push_back(newFigures[i]);
                     }
                     surfaces.push_back(cylinder);
-                    deselectSurface();
-                    selectedSurfaceIdx = surfaces.size() - 1;
-                    surfaces[selectedSurfaceIdx]->selected = true;
+                    deselectSurfaces();
+                    cylinder->selected = true;
+                    recalculateSelectedSurfaces();
 
                     PxSegments = initXsegments;
                     PzSegments = initZsegments;
@@ -482,9 +482,9 @@ int main() {
                         figures.push_back(newFigures[i]);
                     }
                     surfaces.push_back(plane);
-                    deselectSurface();
-                    selectedSurfaceIdx = surfaces.size() - 1;
-                    surfaces[selectedSurfaceIdx]->selected = true;
+                    deselectSurfaces();
+                    plane->selected = true;
+                    recalculateSelectedSurfaces();
 
                     PxSegments = initXsegments;
                     PzSegments = initZsegments;
@@ -523,9 +523,9 @@ int main() {
                         figures.push_back(newFigures[i]);
                     }
                     surfaces.push_back(cylinder);
-                    deselectSurface();
-                    selectedSurfaceIdx = surfaces.size() - 1;
-                    surfaces[selectedSurfaceIdx]->selected = true;
+                    deselectSurfaces();
+                    cylinder->selected = true;
+                    recalculateSelectedSurfaces();
 
                     PxSegments = initXsegments;
                     PzSegments = initZsegments;
@@ -545,16 +545,22 @@ int main() {
 			      ImGui::SeparatorText("Surfaces");
 		      }
 		      for (int i = 0; i < surfaces.size(); i++) {
-			      if (ImGui::Selectable(surfaces[i]->name.c_str(),
-				      &surfaces[i]->selected)) {
-				      bool temp = surfaces[i]->selected;
-				      std::for_each(surfaces.begin(), surfaces.end(), [](Figure* f) {
-					      f->selected = false;; });
-				      surfaces[i]->selected = temp;
-
-				      selectedSurfaceIdx = temp ? i : -1;
-                      recalculateSelected();
-			      }
+                  if (ImGui::Selectable(surfaces[i]->name.c_str(),
+                                        &surfaces[i]->selected)) 
+                  {
+                    if (!ImGui::GetIO().KeyShift) 
+                    {
+                      bool temp = surfaces[i]->selected;
+                      std::for_each(surfaces.begin(),
+                                    surfaces.end(),
+                                    [](SurfaceC0 *s) {
+                                      s->selected = false;
+                                      ;
+                                    });
+                      surfaces[i]->selected = temp;
+                    }
+                    recalculateSelectedSurfaces();
+                  }
 		      }
           
               // curves selection
@@ -601,7 +607,7 @@ int main() {
 		  ImGui::EndChild();
 
           // delete button
-          if (selected.size() > 0 || selectedCurveIdx != -1 || selectedSurfaceIdx != -1) {
+          if (selected.size() > 0 || selectedCurveIdx != -1 || selectedSurfaces.size() > 0) {
             ImGui::Separator();
             if (ImGui::Button("Delete selected")) 
             {
@@ -615,10 +621,10 @@ int main() {
                       curves.erase(curves.begin() + selectedCurveIdx);
                       deselectCurve(true);
                   }
-				  if (selectedSurfaceIdx != -1) {
-					  surfaces.erase(surfaces.begin() + selectedSurfaceIdx);
-                      deselectSurface(true);
-				  }
+                  for (int i = selectedSurfaces.size() - 1; i >= 0; i--) {
+                    surfaces.erase(surfaces.begin() + selectedSurfaces[i]);
+                    recalculateSelectedSurfaces();
+                  }
                   recalculateSelected(true);
               }
               else 
@@ -635,7 +641,7 @@ int main() {
               ImGui::EndPopup();
           }
 
-          if (((selectedCurveIdx != -1) != (selectedSurfaceIdx != -1)) && selected.size() == 0) {
+          if (((selectedCurveIdx != -1) != (selectedSurfaces.size() == 1)) && selected.size() == 0) {
               // delete complex figure with all its control points
 			  ImGui::SameLine();
 			  if (ImGui::Button("Delete with cps")) {
@@ -645,10 +651,10 @@ int main() {
 					  curves.erase(curves.begin() + selectedCurveIdx);
 					  deselectCurve(true);
 				  }
-				  if (selectedSurfaceIdx != -1) {
-					  cpsToDelete = surfaces[selectedSurfaceIdx]->GetControlPoints();
-					  surfaces.erase(surfaces.begin() + selectedSurfaceIdx);
-                      deselectSurface(true);
+                  if (selectedSurfaces.size() == 1) {
+					  cpsToDelete = surfaces[selectedSurfaces[0]]->GetControlPoints();
+                      surfaces.erase(surfaces.begin() + selectedSurfaces[0]);
+                      recalculateSelectedSurfaces();
 				  }
 				  for (int i = 0; i < cpsToDelete.size(); i++) 
 					  for (int j = 0; j < figures.size(); j++) 
@@ -669,28 +675,29 @@ int main() {
 					  }
                       deselectCurve();
 				  }
-				  if (selectedSurfaceIdx != -1) {
-					  std::vector<Figure*> cps = surfaces[selectedSurfaceIdx]->GetControlPoints();
+				  if (selectedSurfaces.size() == 1) {
+					  std::vector<Figure*> cps = surfaces[selectedSurfaces[0]]->GetControlPoints();
 					  for (int i = 0; i < cps.size(); i++) {
 						  cps[i]->selected = true;
 					  }
-                      deselectSurface();
+                      deselectSurfaces();
 				  }
 				  recalculateSelected();
 			  }
 		  }
 
-		  if (selected.size() != 0 || selectedCurveIdx != -1 || selectedSurfaceIdx != -1) {
+		  if (selected.size() != 0 || selectedCurveIdx != -1 || selectedSurfaces.size() != 0) {
               ImGui::SameLine();
 			  if (ImGui::Button("Deselect all")) {
 				  deselectFigures();
                   deselectCurve();
-                  deselectSurface();
+                  deselectSurfaces();
 			  }
 		  }
 
           // add points to curve button
-          if (selected.size() > 0 && selectedCurveIdx != -1 && selectedSurfaceIdx == -1) {
+          if (selected.size() > 0 && selectedCurveIdx != -1 &&
+              selectedSurfaces.size() == 0) {
             if (ImGui::Button("Add points to curve")) {
               for (int i = 0; i < selected.size(); i++) {
                 curves[selectedCurveIdx]->AddControlPoint(figures[selected[i]]);
@@ -704,7 +711,8 @@ int main() {
           }
 
           // selected item menu
-          if (selected.size() == 1 && selectedCurveIdx == -1 && selectedSurfaceIdx == -1) 
+          if (selected.size() == 1 && selectedCurveIdx == -1 &&
+              selectedSurfaces.size() == 0) 
           {
               ImGui::Separator();
               // change name window
@@ -717,7 +725,8 @@ int main() {
 				updateSurfacesSelectedChange();
               }
           }
-          if (selected.size() == 0 && selectedCurveIdx != -1 && selectedSurfaceIdx == -1 && currentMenuItem != 4) 
+          if (selected.size() == 0 && selectedCurveIdx != -1 &&
+              selectedSurfaces.size() == 0 && currentMenuItem != 4) 
           {
             ImGui::Separator();
             // change name window
@@ -734,16 +743,18 @@ int main() {
             }
           }
 
-          if (selected.size() == 0 && selectedCurveIdx == -1 && selectedSurfaceIdx != -1) {
+          if (selected.size() == 0 && selectedCurveIdx == -1 &&
+              selectedSurfaces.size() == 1) {
               ImGui::Separator();
               // change name window
-              ImGui::InputText("Change name", &surfaces[selectedSurfaceIdx]->name);
+              ImGui::InputText("Change name", &surfaces[selectedSurfaces[0]]->name);
               // display selected surface menu
-              surfaces[selectedSurfaceIdx]->CreateImgui();
+              surfaces[selectedSurfaces[0]]->CreateImgui();
           }
 
           // multiple figures merging & manipulation
-          if (selected.size() > 1 && selectedCurveIdx == -1 && selectedSurfaceIdx == -1) {
+          if (selected.size() > 1 && selectedCurveIdx == -1 &&
+              selectedSurfaces.size() == 0) {
             if (ImGui::Button("Merge selected")) 
             {
               Figure *mergeResult = new Point(center->GetPosition());
@@ -941,6 +952,17 @@ int main() {
               ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
+          }
+
+          if (selected.size() == 0 && selectedCurveIdx == -1 && selectedSurfaces.size() > 0) {
+            ImGui::SeparatorText("Gregory patch options:");
+            if (ImGui::Button("Create graph")) {
+              std::vector<Graph *> graphs = {};
+              for (int i = 0; i < selectedSurfaces.size(); i++) {
+                graphs.push_back(new Graph(*surfaces[selectedSurfaces[i]]));
+              }
+              Graph *result = new Graph(graphs);
+            }
           }
         }
 
@@ -1176,13 +1198,11 @@ void deselectFigures() {
   recalculateSelected();
 }
 
-void deselectSurface(bool deleting)
+void deselectSurfaces() 
 {
-	if (selectedSurfaceIdx != -1 && !deleting) {
-		surfaces[selectedSurfaceIdx]->selected = false;
-	}
-	selectedSurfaceIdx = -1;
-	recalculateSelected();
+  std::for_each(surfaces.begin(), surfaces.end(), [](Figure *p) {
+    p->selected = false;;});
+  selectedSurfaces.clear();
 }
 
 void recalculateCenter()
@@ -1211,11 +1231,20 @@ bool checkIfSelectedArePartOfSurface()
     return false;
 }
 
+void recalculateSelectedSurfaces() {
+  selectedSurfaces.clear();
+  for (int i = 0; i < surfaces.size(); i++) {
+    if (surfaces[i]->selected) {
+      selectedSurfaces.push_back(i);
+    }
+  }
+}
+
 void loadScene() {
   // clear selection
   deselectFigures();
   deselectCurve();
-  deselectSurface();
+  deselectSurfaces();
   recalculateCenter();
 
   // remove figures
