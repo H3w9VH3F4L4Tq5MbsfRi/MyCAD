@@ -115,6 +115,7 @@ int tessSurfaceModelLoc, tessSurfaceViewLoc, tessSurfaceProjLoc,
 
 bool renderGrid = true;
 std::string serializerErrorMsg = "";
+Graph *common; 
 
 int main() { 
     // initial values
@@ -953,17 +954,6 @@ int main() {
             }
             ImGui::EndPopup();
           }
-
-          if (selected.size() == 0 && selectedCurveIdx == -1 && selectedSurfaces.size() > 0) {
-            ImGui::SeparatorText("Gregory patch options:");
-            if (ImGui::Button("Create graph")) {
-              std::vector<Graph *> graphs = {};
-              for (int i = 0; i < selectedSurfaces.size(); i++) {
-                graphs.push_back(new Graph(*surfaces[selectedSurfaces[i]]));
-              }
-              Graph *result = new Graph(graphs);
-            }
-          }
         }
 
         ImGui::End();
@@ -1238,6 +1228,11 @@ void recalculateSelectedSurfaces() {
       selectedSurfaces.push_back(i);
     }
   }
+  std::vector<Graph*> graphs = {};
+  for (int i = 0; i < selectedSurfaces.size(); i++) {
+    graphs.push_back(surfaces[selectedSurfaces[i]]->ambit);
+  }
+  common = new Graph(graphs);
 }
 
 void loadScene() {
@@ -1344,8 +1339,6 @@ void loadScene() {
         tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
         tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, cps);
     surfaces.push_back(s);
-
-    //new Graph(*s);
   }
 
   // import surface C2

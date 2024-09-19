@@ -1,4 +1,5 @@
 #pragma once
+#include "Graph.h"
 #include "figure.h"
 #include "bicubicPatch.h"
 
@@ -17,6 +18,8 @@ protected:
     bool CheckWrappedV(int i, int j);
 
 public:
+    Graph *ambit = new Graph();
+
 	SurfaceC0(glm::vec3 position, std::string name = "Surface C0");
 
 	void Render(int colorLoc, int modelLoc, bool grayscale);

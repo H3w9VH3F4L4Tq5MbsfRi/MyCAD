@@ -2,7 +2,8 @@
 
 #include <vector>
 #include <figure.h>
-#include <surfaceC0.h>
+
+class SurfaceC0;
 
 class Graph {
 private:

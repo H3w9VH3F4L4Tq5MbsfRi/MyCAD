@@ -39,6 +39,7 @@ std::vector<Figure*> SurfaceC0::CalculatePlane(int cpCount, int segmentCountLoc,
                 &this->division));
 		}
 	}
+    this->ambit = new Graph(*this);
 	return newPoints;
 }
 
@@ -95,7 +96,7 @@ std::vector<Figure*> SurfaceC0::CalculateCylinder(int cpCount, int segmentCountL
                 &this->division));
 		}
 	}
-
+    this->ambit = new Graph(*this);
 	return newPoints;
 }
 
@@ -138,6 +139,7 @@ void SurfaceC0::CreateFromControlPoints(int cpCount, int segmentCountLoc,
                               divisionLoc, otherAxisLoc, bsplineLoc, false,
                               cpsPatch, &this->division));
   }
+  this->ambit = new Graph(*this);
 }
 
 int SurfaceC0::CalcSize(int i, int j) 
@@ -243,6 +245,7 @@ void SurfaceC0::RefreshBuffers()
 	for (int i = 0; i < patches.size(); i++) {
 		patches[i]->RefreshBuffers();
 	}
+    this->ambit = new Graph(*this);
 }
 
 void SurfaceC0::Render(int colorLoc, int modelLoc, bool grayscale)

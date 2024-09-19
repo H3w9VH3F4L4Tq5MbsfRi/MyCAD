@@ -1,5 +1,6 @@
 #include "Graph.h"
 #include <iostream>
+#include "surfaceC0.h"
 
 Graph::Graph() {
   vertices = std::vector<Figure *>();
