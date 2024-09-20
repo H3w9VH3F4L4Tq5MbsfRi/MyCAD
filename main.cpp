@@ -102,7 +102,7 @@ bool checkIfSelectedArePartOfSurface();
 void recalculateSelectedSurfaces();
 
 MG1::SceneSerializer serializer;
-std::string filePath = "Scenes\\referenceScene.json";
+std::string filePath = "Scenes\\gregory_test_2024.json";
 
 int modelLoc, viewLoc, projLoc, colorLoc, displacementLoc;
 int tessModelLoc, tessViewLoc, tessProjLoc, tessColorLoc, tessCpCountLoc,
