@@ -118,7 +118,8 @@ bool renderGrid = true;
 std::string serializerErrorMsg = "";
 
 Polyline *common;
-bool showCommonAmbit = true;
+bool showCommonAmbit = false;
+std::vector<Polyline*> cycles;
 
 int main() { 
     // initial values
@@ -200,6 +201,7 @@ int main() {
     center = new Cursor();
     camera = new Camera(width, height, cameraPosition, fov, near, far, guiWidth);
     common = new Polyline();
+    cycles = std::vector<Polyline*>();
 
     // matrices locations
     camera->PrepareMatrices(view, proj);
@@ -245,8 +247,15 @@ int main() {
       for (int i = 0; i < surfaces.size(); i++)
         surfaces[i]->Render(colorLoc, modelLoc, grayscale);
 
-      if (selectedSurfaces.size() > 0 && showCommonAmbit)
-        common->Render(colorLoc, modelLoc, grayscale);
+      if (selectedSurfaces.size() > 0) {
+        if (showCommonAmbit) {
+          common->Render(colorLoc, modelLoc, grayscale);
+        } else {
+          for (int i = 0; i < cycles.size(); i++) {
+            cycles[i]->Render(colorLoc, modelLoc, grayscale);
+          }
+        }
+      }
 
       // tessellation shader activation
       tessShaderProgram.Activate();
@@ -1246,7 +1255,14 @@ void recalculateSelectedSurfaces() {
     graphs.push_back(surfaces[selectedSurfaces[i]]->ambit);
   }
   common->Delete();
-  common = new Polyline(new Graph(graphs));
+  Graph *commonGraph = new Graph(graphs);
+  common = new Polyline(commonGraph);
+
+  std::set<std::vector<int>> foundCycles = commonGraph->findCyclesWithNVertices(9);
+  cycles.clear();
+  for (auto cycle : foundCycles) {
+    cycles.push_back(new Polyline(new Graph(*commonGraph, cycle)));
+  }
 }
 
 void loadScene() {

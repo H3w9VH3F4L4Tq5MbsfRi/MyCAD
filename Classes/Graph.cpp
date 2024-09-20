@@ -2,9 +2,56 @@
 #include <iostream>
 #include "surfaceC0.h"
 
+std::vector<int> Graph::getCanonicalForm(const std::vector<int> &cycle) {
+  std::vector<int> minCycle = cycle;
+
+  std::vector<int> reversedCycle = cycle;
+  std::reverse(reversedCycle.begin(), reversedCycle.end());
+
+  for (size_t i = 0; i < cycle.size(); ++i) {
+    std::vector<int> rotatedCycle(cycle.begin() + i, cycle.end());
+    rotatedCycle.insert(rotatedCycle.end(), cycle.begin(), cycle.begin() + i);
+
+    std::vector<int> rotatedReversed(reversedCycle.begin() + i,
+                                     reversedCycle.end());
+    rotatedReversed.insert(rotatedReversed.end(), reversedCycle.begin(),
+                           reversedCycle.begin() + i);
+
+    minCycle = std::min(minCycle, rotatedCycle);
+    minCycle = std::min(minCycle, rotatedReversed);
+  }
+
+  return minCycle;
+}
+
+void Graph::dfs(int start, int current, std::vector<int> &path,
+                std::vector<bool> &visited,
+                std::set<std::vector<int>> &uniqueCycles, int N) {
+  visited[current] = true;
+  path.push_back(current);
+  std::vector<int> neighbors = adjList.getNeighbours(current);
+
+  if (path.size() == N) {
+    if (std::find(neighbors.begin(), neighbors.end(), start) !=
+        neighbors.end()) {
+      std::vector<int> cycle = getCanonicalForm(path);
+      uniqueCycles.insert(cycle);
+    }
+  } else {
+    for (int neighbor : neighbors) {
+      if (!visited[neighbor]) {
+        dfs(start, neighbor, path, visited, uniqueCycles, N);
+      }
+    }
+  }
+
+  path.pop_back();
+  visited[current] = false;
+}
+
 Graph::Graph() {
   vertices = std::vector<Figure *>();
-  adjList = std::vector<std::vector<int>>();
+  adjList = AdjecencyList();
 }
 
 Graph::Graph(SurfaceC0 &surface) { 
@@ -63,18 +110,16 @@ Graph::Graph(SurfaceC0 &surface) {
 
         int idx = i * 16 + j;
         vertices.push_back(cps[idx]);
-        adjList.push_back({});
+        adjList.addVertex();
       }
     }
     if (currSize != 0 && !cylinder)
       currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList[i + 1].push_back(i);
-      adjList[i].push_back(i + 1);
+      adjList.addEdge(i, i + 1);
     }
     if (cylinder) {
-      adjList[vertices.size() - 1].push_back(currSize);
-      adjList[currSize].push_back(vertices.size() - 1);
+      adjList.addEdge(vertices.size() - 1, currSize);
     }
 
     //std::cout << "bottom: " << vertices.size() << " / "
@@ -92,18 +137,16 @@ Graph::Graph(SurfaceC0 &surface) {
 
         int idx = (sizeU - 1) * 16 + i * sizeU * 16 + j * 4 + 3;
         vertices.push_back(cps[idx]);
-        adjList.push_back({});
+        adjList.addVertex();
       }
     }
     if (currSize != 0 && !cylinder)
       currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList[i + 1].push_back(i);
-      adjList[i].push_back(i + 1);
+      adjList.addEdge(i, i + 1);
     }
     if (cylinder) {
-      adjList[vertices.size() - 1].push_back(currSize);
-      adjList[currSize].push_back(vertices.size() - 1);
+      adjList.addEdge(vertices.size() - 1, currSize);
     }
 
     //std::cout << "right: " << (vertices.size() - currSize) << " / " << rightExpected
@@ -121,18 +164,16 @@ Graph::Graph(SurfaceC0 &surface) {
 
         int idx = (sizeV - 1) * sizeU * 16 + i * 16 + 12 + j;
         vertices.push_back(cps[idx]);
-        adjList.push_back({});
+        adjList.addVertex();
       }
     }
     if (currSize != 0 && !cylinder)
       currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList[i + 1].push_back(i);
-      adjList[i].push_back(i + 1);
+      adjList.addEdge(i, i + 1);
     }
     if (cylinder) {
-      adjList[vertices.size() - 1].push_back(currSize);
-      adjList[currSize].push_back(vertices.size() - 1);
+      adjList.addEdge(vertices.size() - 1, currSize);
     }
 
     //std::cout << "top: " << (vertices.size() - currSize) << " / "
@@ -152,18 +193,16 @@ Graph::Graph(SurfaceC0 &surface) {
 
         int idx = i * sizeU * 16 + j * 4;
         vertices.push_back(cps[idx]);
-        adjList.push_back({});
+        adjList.addVertex();
       }
     }
     if (currSize != 0 && !cylinder)
       currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList[i + 1].push_back(i);
-      adjList[i].push_back(i + 1);
+      adjList.addEdge(i, i + 1);
     }
     if (cylinder) {
-      adjList[vertices.size() - 1].push_back(currSize);
-      adjList[currSize].push_back(vertices.size() - 1);
+      adjList.addEdge(vertices.size() - 1, currSize);
     }
 
     //std::cout << "left: " << (vertices.size() - currSize) << " / "
@@ -172,8 +211,7 @@ Graph::Graph(SurfaceC0 &surface) {
     // currSize = vertices.size();
   }
   if (rectangle) {
-    adjList[vertices.size() - 1].push_back(0);
-    adjList[0].push_back(vertices.size() - 1);
+    adjList.addEdge(vertices.size() - 1, 0);
   }
 
   //std::cout << std::endl;
@@ -201,17 +239,57 @@ Graph::Graph(std::vector<Graph *> &graphs) {
       if (!found) {
         newIndices.push_back(this->vertices.size());
         this->vertices.push_back(graphs[i]->vertices[j]);
-        this->adjList.push_back({});
+        this->adjList.addVertex();
       } else {
-        std::cout << "Duplicate found." << std::endl;
+        //std::cout << "Duplicate found." << std::endl;
       }
     }
 
-    for (int j = 0; j < graphs[i]->adjList.size(); j++) {
-      for (int k = 0; k < graphs[i]->adjList[j].size(); k++) {
-        this->adjList[newIndices[j]].push_back(
-            newIndices[graphs[i]->adjList[j][k]]);
+    for (int j = 0; j < graphs[i]->adjList.getVertexCount(); j++) {
+      for (int k = 0; k < graphs[i]->adjList.getNeighbours(j).size(); k++) {
+        this->adjList.addEdge(
+            newIndices[j], newIndices[graphs[i]->adjList.getNeighbours(j)[k]]);
       }
     }
   }
 }
+
+Graph::Graph(Graph &graph, std::vector<int> &cycleVertices) {
+  for (int i = 0; i < cycleVertices.size(); i++) {
+    vertices.push_back(graph.vertices[cycleVertices[i]]);
+    adjList.addVertex();
+  }
+  for (int i = 1; i < this->vertices.size(); i++) {
+    adjList.addEdge(i - 1, i);
+  }
+  adjList.addEdge(this->vertices.size() - 1, 0);
+}
+
+std::set<std::vector<int>> Graph::findCyclesWithNVertices(int N) {
+  std::set<std::vector<int>> uniqueCycles;
+  int vertexCount = adjList.getVertexCount();
+
+  for (int i = 0; i < vertexCount; ++i) {
+    std::vector<bool> visited(vertexCount, false);
+    std::vector<int> path;
+    dfs(i, i, path, visited, uniqueCycles, N);
+  }
+
+  return uniqueCycles;
+}
+
+AdjecencyList::AdjecencyList() : adjList() {}
+
+int AdjecencyList::addVertex() {
+  adjList.push_back({});
+  return 0;
+}
+
+void AdjecencyList::addEdge(int u, int v) {
+  adjList[u].push_back(v);
+  adjList[v].push_back(u);
+}
+
+std::vector<int> AdjecencyList::getNeighbours(int u) { return adjList[u]; }
+
+int AdjecencyList::getVertexCount() { return adjList.size(); }

@@ -30,10 +30,10 @@ Polyline::Calculate(Graph *graph) const {
     vertices.push_back(graph->vertices[i]->GetPosition().z);
   }
 
-  for (int i = 0; i < graph->adjList.size(); i++) {
-    for (int j = 0; j < graph->adjList[i].size(); j++) {
+  for (int i = 0; i < graph->adjList.getVertexCount(); i++) {
+    for (int j = 0; j < graph->adjList.getNeighbours(i).size(); j++) {
       indices.push_back(i);
-      indices.push_back(graph->adjList[i][j]);
+      indices.push_back(graph->adjList.getNeighbours(i)[j]);
     }
   }
 
