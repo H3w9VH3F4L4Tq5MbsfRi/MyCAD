@@ -975,6 +975,9 @@ int main() {
           {
             ImGui::SeparatorText("Gregory patch options:");
             ImGui::Checkbox("Show common ambit", &showCommonAmbit);
+            ImGui::Text("Places for patch: ");
+            ImGui::SameLine();
+            ImGui::Text(std::to_string(cycles.size()).c_str());
           }
         }
 
@@ -1258,7 +1261,7 @@ void recalculateSelectedSurfaces() {
   Graph *commonGraph = new Graph(graphs);
   common = new Polyline(commonGraph);
 
-  std::set<std::vector<int>> foundCycles = commonGraph->findCyclesWithNVertices(9);
+  std::set<std::vector<int>> foundCycles = commonGraph->findCyclesWithNVertices(3);
   cycles.clear();
   for (auto cycle : foundCycles) {
     cycles.push_back(new Polyline(new Graph(*commonGraph, cycle)));

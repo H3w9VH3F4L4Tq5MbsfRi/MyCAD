@@ -54,167 +54,62 @@ Graph::Graph() {
   adjList = AdjecencyList();
 }
 
-Graph::Graph(SurfaceC0 &surface) { 
+Graph::Graph(SurfaceC0 &surface) {
   int sizeU = surface.CalcSizeU();
   int sizeV = surface.CalcSizeV();
   bool wrappedU = surface.IsWrappedU();
   bool wrappedV = surface.IsWrappedV();
 
-  //std::cout << surface.name << std::endl;
-  //std::cout << "size (u|v): " << sizeU << " | " << sizeV << std::endl;
-  //if (!wrappedU && !wrappedV)
-  //  std::cout << "type: Rectangle" << std::endl;
-  //else if (wrappedU) 
-  //    std::cout << "type: Cylinder U" << std::endl;
-  //else if (wrappedV)
-  //  std::cout << "type: Cylinder V" << std::endl;
-  //else
-  //  std::cout << "WTF" << std::endl;
-
   std::vector<Figure *> cps = surface.GetControlPoints();
 
-  int currSize = 0;
+  // bottom row (u increasing)
+  if (!wrappedV) {
+    for (int i = 0; i < sizeU; i++) {
+      vertices.push_back(cps[16 * i]);
+      adjList.addVertex();
+    }
+  }
+  // right column (v increasing)
+  if (!wrappedU) {
+    for (int i = 0; i < sizeV; i++) {
+      vertices.push_back(cps[16 * sizeU * i + 16 * (sizeU - 1) + 3]);
+      adjList.addVertex();
+    }
+  }
+  // top row (u decreasing)
+  if (!wrappedV) {
+    for (int i = 0; i < sizeU; i++) {
+      vertices.push_back(
+          cps[16 * (sizeV - 1) * sizeU + 16 * (sizeU - 1 - i) + 15]);
+      adjList.addVertex();
+    }
+  }
+  // left column (v decreasing)
+  if (!wrappedU) {
+    for (int i = 0; i < sizeV; i++) {
+      vertices.push_back(cps[16 * sizeU * (sizeV - 1 - i) + 12]);
+      adjList.addVertex();
+    }
+  }
+
   bool cylinder = wrappedU xor wrappedV;
   bool rectangle = !wrappedU && !wrappedV;
 
-  //int bottomExpected = 0;
-  //if (sizeU >= 1)
-  //  bottomExpected += 4;
-  //if (sizeU >= 2)
-  //  bottomExpected += (sizeU - 1) * 3;
-  //if (cylinder)
-  //  bottomExpected -= 1;
-
-  //int rightExpected = 0;
-  //rightExpected += sizeV * 3;
-
-  //int topExpected = 0;
-  //topExpected += sizeU * 3;
-
-  //int leftExpected = 0;
-  //if (sizeV >= 1)
-  //  leftExpected += 2;
-  //if (sizeV >= 2)
-  //  leftExpected += (sizeV - 1) * 3;
-  //if (cylinder)
-  //  leftExpected += 1;
-
-  // bottom (u increasing)
-  if (!wrappedV) {
-    for (int i = 0; i < sizeU; i++) {
-      for (int j = 0; j < 4; j++) {
-        if (j == 0 && i != 0)
-          continue;
-        if (i == (sizeU - 1) && j == 3 && cylinder)
-          continue;
-
-        int idx = i * 16 + j;
-        vertices.push_back(cps[idx]);
-        adjList.addVertex();
-      }
-    }
-    if (currSize != 0 && !cylinder)
-      currSize -= 1;
-    for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList.addEdge(i, i + 1);
-    }
-    if (cylinder) {
-      adjList.addEdge(vertices.size() - 1, currSize);
-    }
-
-    //std::cout << "bottom: " << vertices.size() << " / "
-    //          << bottomExpected << std::endl;
-
-    currSize = vertices.size();
-  }
-
-  if (!wrappedU) {
-    // right (v increasing)
-    for (int i = 0; i < sizeV; i++) {
-      for (int j = 0; j < 4; j++) {
-        if (j == 0)
-          continue;
-
-        int idx = (sizeU - 1) * 16 + i * sizeU * 16 + j * 4 + 3;
-        vertices.push_back(cps[idx]);
-        adjList.addVertex();
-      }
-    }
-    if (currSize != 0 && !cylinder)
-      currSize -= 1;
-    for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList.addEdge(i, i + 1);
-    }
-    if (cylinder) {
-      adjList.addEdge(vertices.size() - 1, currSize);
-    }
-
-    //std::cout << "right: " << (vertices.size() - currSize) << " / " << rightExpected
-    //          << std::endl;
-
-    currSize = vertices.size();
-  }
-  
-  if (!wrappedV) {
-    // top (u decreasing)
-    for (int i = sizeU - 1; i >= 0; i--) {
-      for (int j = 3; j >= 0; j--) {
-        if (j == 3)
-          continue;
-
-        int idx = (sizeV - 1) * sizeU * 16 + i * 16 + 12 + j;
-        vertices.push_back(cps[idx]);
-        adjList.addVertex();
-      }
-    }
-    if (currSize != 0 && !cylinder)
-      currSize -= 1;
-    for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList.addEdge(i, i + 1);
-    }
-    if (cylinder) {
-      adjList.addEdge(vertices.size() - 1, currSize);
-    }
-
-    //std::cout << "top: " << (vertices.size() - currSize) << " / "
-    //          << topExpected << std::endl;
-
-    currSize = vertices.size();
-  }
-
-  if (!wrappedU) {
-    // left (v decreasing)
-    for (int i = sizeV - 1; i >= 0; i--) {
-      for (int j = 3; j >= 0; j--) {
-        if (j == 3)
-          continue;
-        if (j == 0 && i == 0 && !cylinder)
-          continue;
-
-        int idx = i * sizeU * 16 + j * 4;
-        vertices.push_back(cps[idx]);
-        adjList.addVertex();
-      }
-    }
-    if (currSize != 0 && !cylinder)
-      currSize -= 1;
-    for (int i = currSize; i < vertices.size() - 1; i++) {
-      adjList.addEdge(i, i + 1);
-    }
-    if (cylinder) {
-      adjList.addEdge(vertices.size() - 1, currSize);
-    }
-
-    //std::cout << "left: " << (vertices.size() - currSize) << " / "
-    //          << leftExpected << std::endl;
-
-    // currSize = vertices.size();
-  }
   if (rectangle) {
+    for (int i = 0; i < vertices.size() - 1; i++) {
+      adjList.addEdge(i, i + 1);
+    }
     adjList.addEdge(vertices.size() - 1, 0);
+  } else if (cylinder) {
+    for (int i = 0; i < (vertices.size() / 2) - 1; i++) {
+      adjList.addEdge(i, i + 1);
+    }
+    adjList.addEdge((vertices.size() / 2) - 1, 0);
+    for (int i = vertices.size() / 2; i < vertices.size() - 1; i++) {
+      adjList.addEdge(i, i + 1);
+    }
+    adjList.addEdge(vertices.size() - 1, vertices.size() / 2);
   }
-
-  //std::cout << std::endl;
 }
 
 Graph::Graph(std::vector<Graph *> &graphs) {
