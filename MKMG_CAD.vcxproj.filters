@@ -120,6 +120,9 @@
     <ClCompile Include="Classes\Graph.cpp">
       <Filter>Source Files\assets</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\polyline.cpp">
+      <Filter>Source Files\figures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="Classes\Graph.h">
       <Filter>Header Files\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\polyline.h">
+      <Filter>Header Files\figures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

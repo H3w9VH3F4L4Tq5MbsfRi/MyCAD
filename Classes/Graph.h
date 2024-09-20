@@ -14,4 +14,6 @@ public:
   Graph();
   Graph(SurfaceC0 &surface);
   Graph(std::vector<Graph*> &graphs);
+
+  friend class Polyline;
 };

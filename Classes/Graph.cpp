@@ -66,6 +66,8 @@ Graph::Graph(SurfaceC0 &surface) {
         adjList.push_back({});
       }
     }
+    if (currSize != 0 && !cylinder)
+      currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
       adjList[i + 1].push_back(i);
       adjList[i].push_back(i + 1);
@@ -93,6 +95,8 @@ Graph::Graph(SurfaceC0 &surface) {
         adjList.push_back({});
       }
     }
+    if (currSize != 0 && !cylinder)
+      currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
       adjList[i + 1].push_back(i);
       adjList[i].push_back(i + 1);
@@ -120,6 +124,8 @@ Graph::Graph(SurfaceC0 &surface) {
         adjList.push_back({});
       }
     }
+    if (currSize != 0 && !cylinder)
+      currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
       adjList[i + 1].push_back(i);
       adjList[i].push_back(i + 1);
@@ -149,6 +155,8 @@ Graph::Graph(SurfaceC0 &surface) {
         adjList.push_back({});
       }
     }
+    if (currSize != 0 && !cylinder)
+      currSize -= 1;
     for (int i = currSize; i < vertices.size() - 1; i++) {
       adjList[i + 1].push_back(i);
       adjList[i].push_back(i + 1);

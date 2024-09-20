@@ -34,6 +34,7 @@
 #include <Serializer.h>
 #include <filesystem>
 #include "Graph.h"
+#include "polyline.h"
 
 const float near = 0.1f;
 const float far = 100.0f;
@@ -115,7 +116,9 @@ int tessSurfaceModelLoc, tessSurfaceViewLoc, tessSurfaceProjLoc,
 
 bool renderGrid = true;
 std::string serializerErrorMsg = "";
-Graph *common; 
+
+Polyline *common;
+bool showCommonAmbit = true;
 
 int main() { 
     // initial values
@@ -196,6 +199,7 @@ int main() {
     cursor = new Cursor();
     center = new Cursor();
     camera = new Camera(width, height, cameraPosition, fov, near, far, guiWidth);
+    common = new Polyline();
 
     // matrices locations
     camera->PrepareMatrices(view, proj);
@@ -240,6 +244,9 @@ int main() {
       // render surfaces with default shader
       for (int i = 0; i < surfaces.size(); i++)
         surfaces[i]->Render(colorLoc, modelLoc, grayscale);
+
+      if (selectedSurfaces.size() > 0 && showCommonAmbit)
+        common->Render(colorLoc, modelLoc, grayscale);
 
       // tessellation shader activation
       tessShaderProgram.Activate();
@@ -954,6 +961,12 @@ int main() {
             }
             ImGui::EndPopup();
           }
+
+          if (selectedSurfaces.size() > 0) 
+          {
+            ImGui::SeparatorText("Gregory patch options:");
+            ImGui::Checkbox("Show common ambit", &showCommonAmbit);
+          }
         }
 
         ImGui::End();
@@ -1232,7 +1245,8 @@ void recalculateSelectedSurfaces() {
   for (int i = 0; i < selectedSurfaces.size(); i++) {
     graphs.push_back(surfaces[selectedSurfaces[i]]->ambit);
   }
-  common = new Graph(graphs);
+  common->Delete();
+  common = new Polyline(new Graph(graphs));
 }
 
 void loadScene() {

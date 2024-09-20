@@ -154,6 +154,7 @@
     <ClCompile Include="Classes\grid.cpp" />
     <ClCompile Include="Classes\helpers.cpp" />
     <ClCompile Include="Classes\point.cpp" />
+    <ClCompile Include="Classes\polyline.cpp" />
     <ClCompile Include="Classes\Shader.cpp" />
     <ClCompile Include="Classes\surfaceC0.cpp" />
     <ClCompile Include="Classes\surfaceC2.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Classes\grid.h" />
     <ClInclude Include="Classes\helpers.h" />
     <ClInclude Include="Classes\point.h" />
+    <ClInclude Include="Classes\polyline.h" />
     <ClInclude Include="Classes\Shader.h" />
     <ClInclude Include="Classes\surfaceC0.h" />
     <ClInclude Include="Classes\surfaceC2.h" />
