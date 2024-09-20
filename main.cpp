@@ -1149,7 +1149,7 @@ void updateSurfacesSelectedChange()
 			for (int k = 0; k < points.size(); k++) {
 				if (figures[selected[i]] == points[k]) {
 					surfaces[j]->RefreshBuffers();
-                    return;
+                    break;
 				}
 			}
 		}
