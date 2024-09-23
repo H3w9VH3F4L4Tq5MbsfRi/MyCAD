@@ -244,8 +244,19 @@ int main() {
       for (int i = 0; i < surfaces.size(); i++)
         surfaces[i]->Render(colorLoc, modelLoc, grayscale);
 
-      if (selectedSurfaces.size() > 0) {
+      if (selectedSurfaces.size() > 0 && cycles.size() > 0) {
+        int selecredCycleIndex = -1;
         for (int i = 0; i < cycles.size(); i++) {
+          if (cycles[i]->selected) {
+            selecredCycleIndex = i;
+            break;
+          }
+        }
+        cycles[selecredCycleIndex]->Render(colorLoc, modelLoc, grayscale);
+
+        for (int i = 0; i < cycles.size(); i++) {
+          if (i == selecredCycleIndex)
+            continue;
           cycles[i]->Render(colorLoc, modelLoc, grayscale);
         }
       }

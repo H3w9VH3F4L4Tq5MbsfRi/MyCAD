@@ -3,10 +3,14 @@
 
 Polyline::Polyline()
     : Figure(std::tuple<std::vector<GLfloat>, std::vector<GLuint>>(),
-             "Polyline,", glm::vec3(0.f)) {}
+             "Polyline,", glm::vec3(0.f)) {
+  this->graph = new Graph();
+}
 
 Polyline::Polyline(Graph *graph)
-    : Figure(Calculate(graph), "Polyline", glm::vec3(0.f)) {}
+    : Figure(InitializeAndCalculate(graph), "Polyline", glm::vec3(0.f)) {
+  this->graph = graph;
+}
 
 void Polyline::Render(int colorLoc, int modelLoc, bool grayscale) {
   vao.Bind();
@@ -20,7 +24,13 @@ void Polyline::Render(int colorLoc, int modelLoc, bool grayscale) {
 }
 
 std::tuple<std::vector<GLfloat>, std::vector<GLuint>>
-Polyline::Calculate(Graph *graph) const {
+Polyline::InitializeAndCalculate(Graph *graph) {
+  this->graph = graph;
+  return Calculate();
+}
+
+std::tuple<std::vector<GLfloat>, std::vector<GLuint>>
+Polyline::Calculate() const {
   std::vector<GLfloat> vertices;
   std::vector<GLuint> indices;
 

@@ -11,11 +11,14 @@ public:
   bool GetBoundingSphere(CAD::Sphere &sphere) { return false; };
 
 private:
+  Graph *graph;
+
   int counter = 0;
   const int step = 250;
   const float minIntensity = 0.1f;
   const glm::vec4 color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
-  std::tuple<std::vector<GLfloat>, std::vector<GLuint>> Calculate(Graph *graph) const;
+  std::tuple<std::vector<GLfloat>, std::vector<GLuint>> InitializeAndCalculate(Graph *graph);
+  std::tuple<std::vector<GLfloat>, std::vector<GLuint>> Calculate() const;
   glm::vec4 GetAnimatedColor(bool grayscale);
 };
