@@ -117,8 +117,6 @@ int tessSurfaceModelLoc, tessSurfaceViewLoc, tessSurfaceProjLoc,
 bool renderGrid = true;
 std::string serializerErrorMsg = "";
 
-Polyline *common;
-bool showCommonAmbit = false;
 std::vector<Polyline*> cycles;
 
 int main() { 
@@ -200,7 +198,6 @@ int main() {
     cursor = new Cursor();
     center = new Cursor();
     camera = new Camera(width, height, cameraPosition, fov, near, far, guiWidth);
-    common = new Polyline();
     cycles = std::vector<Polyline*>();
 
     // matrices locations
@@ -248,12 +245,8 @@ int main() {
         surfaces[i]->Render(colorLoc, modelLoc, grayscale);
 
       if (selectedSurfaces.size() > 0) {
-        if (showCommonAmbit) {
-          common->Render(colorLoc, modelLoc, grayscale);
-        } else {
-          for (int i = 0; i < cycles.size(); i++) {
-            cycles[i]->Render(colorLoc, modelLoc, grayscale);
-          }
+        for (int i = 0; i < cycles.size(); i++) {
+          cycles[i]->Render(colorLoc, modelLoc, grayscale);
         }
       }
 
@@ -974,10 +967,35 @@ int main() {
           if (selectedSurfaces.size() > 0) 
           {
             ImGui::SeparatorText("Gregory patch options:");
-            ImGui::Checkbox("Show common ambit", &showCommonAmbit);
             ImGui::Text("Places for patch: ");
             ImGui::SameLine();
             ImGui::Text(std::to_string(cycles.size()).c_str());
+
+            if (cycles.size() > 1) {
+              int selectedCycle = -1;
+              for (int i = 0; i < cycles.size(); i++) {
+                if (cycles[i]->selected) {
+                  selectedCycle = i;
+                  break;
+                }
+              }
+              selectedCycle += 1;
+
+              if (ImGui::SliderInt("Selection", &selectedCycle, 1,
+                                   cycles.size())) {
+                for (int i = 0; i < cycles.size(); i++) {
+                  cycles[i]->selected = false;
+                }
+                cycles[selectedCycle - 1]->selected = true;
+              }
+            }
+
+            if (cycles.size() > 0) {
+              if (ImGui::Button("Create Gregory patch")) {
+                // TODO: implement
+                std::cout << "Creating Gregory patch" << std::endl;
+              }
+            }
           }
         }
 
@@ -1257,14 +1275,15 @@ void recalculateSelectedSurfaces() {
   for (int i = 0; i < selectedSurfaces.size(); i++) {
     graphs.push_back(surfaces[selectedSurfaces[i]]->ambit);
   }
-  common->Delete();
-  Graph *commonGraph = new Graph(graphs);
-  common = new Polyline(commonGraph);
 
+  Graph *commonGraph = new Graph(graphs);
   std::set<std::vector<int>> foundCycles = commonGraph->findCyclesWithNVertices(3);
   cycles.clear();
   for (auto cycle : foundCycles) {
     cycles.push_back(new Polyline(new Graph(*commonGraph, cycle)));
+  }
+  if (cycles.size() > 0) {
+    cycles[0]->selected = true;
   }
 }
 

@@ -13,7 +13,7 @@ void Polyline::Render(int colorLoc, int modelLoc, bool grayscale) {
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
   glLineWidth(5.0f);
-  glUniform4fv(colorLoc, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
+  glUniform4fv(colorLoc, 1, glm::value_ptr(GetAnimatedColor(grayscale)));
 
   glDrawElements(GL_LINES, indices_count, GL_UNSIGNED_INT, 0);
   vao.Unbind();
@@ -38,4 +38,26 @@ Polyline::Calculate(Graph *graph) const {
   }
 
   return std::make_tuple(vertices, indices);
+}
+
+glm::vec4 Polyline::GetAnimatedColor(bool grayscale) {
+  if (!selected) {
+    // counter = 0;
+    return color * minIntensity;
+  }
+
+  counter++;
+  int coef = counter % (step * 2);
+  coef -= step;
+  float intensity = (abs(coef) / (float)step);
+  intensity = intensity < minIntensity ? minIntensity : intensity;
+  glm::vec4 resultColor = color * intensity;
+
+  if (grayscale) {
+    float gray = 0.299f * resultColor.r + 0.587f * resultColor.g +
+                 0.114f * resultColor.b;
+    resultColor = glm::vec4(gray, gray, gray, resultColor.a);
+  }
+
+  return resultColor;
 }
