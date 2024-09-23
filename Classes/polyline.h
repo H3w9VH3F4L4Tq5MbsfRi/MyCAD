@@ -4,6 +4,8 @@
 
 class Polyline : public Figure {
 public:
+  Graph *graph;
+
   Polyline();
   Polyline(Graph *graph);
 
@@ -11,8 +13,6 @@ public:
   bool GetBoundingSphere(CAD::Sphere &sphere) { return false; };
 
 private:
-  Graph *graph;
-
   int counter = 0;
   const int step = 250;
   const float minIntensity = 0.1f;

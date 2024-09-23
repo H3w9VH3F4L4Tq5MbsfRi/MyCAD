@@ -43,7 +43,7 @@ Polyline::Calculate() const {
   for (int i = 0; i < graph->adjList.getVertexCount(); i++) {
     for (int j = 0; j < graph->adjList.getNeighbours(i).size(); j++) {
       indices.push_back(i);
-      indices.push_back(graph->adjList.getNeighbours(i)[j]);
+      indices.push_back(graph->adjList.getNeighbours(i)[j]->v);
     }
   }
 

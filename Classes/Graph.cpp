@@ -29,7 +29,11 @@ void Graph::dfs(int start, int current, std::vector<int> &path,
                 std::set<std::vector<int>> &uniqueCycles, int N) {
   visited[current] = true;
   path.push_back(current);
-  std::vector<int> neighbors = adjList.getNeighbours(current);
+  std::vector<EdgeStruct*> neighborsFull = adjList.getNeighbours(current);
+  std::vector<int> neighbors;
+  for (EdgeStruct *neighbor : neighborsFull) {
+    neighbors.push_back(neighbor->v);
+  }
 
   if (path.size() == N) {
     if (std::find(neighbors.begin(), neighbors.end(), start) !=
@@ -97,18 +101,18 @@ Graph::Graph(SurfaceC0 &surface) {
 
   if (rectangle) {
     for (int i = 0; i < vertices.size() - 1; i++) {
-      adjList.addEdge(i, i + 1);
+      adjList.addEdge(i, i + 1, &surface);
     }
-    adjList.addEdge(vertices.size() - 1, 0);
+    adjList.addEdge(vertices.size() - 1, 0, &surface);
   } else if (cylinder) {
     for (int i = 0; i < (vertices.size() / 2) - 1; i++) {
-      adjList.addEdge(i, i + 1);
+      adjList.addEdge(i, i + 1, &surface);
     }
-    adjList.addEdge((vertices.size() / 2) - 1, 0);
+    adjList.addEdge((vertices.size() / 2) - 1, 0, &surface);
     for (int i = vertices.size() / 2; i < vertices.size() - 1; i++) {
-      adjList.addEdge(i, i + 1);
+      adjList.addEdge(i, i + 1, &surface);
     }
-    adjList.addEdge(vertices.size() - 1, vertices.size() / 2);
+    adjList.addEdge(vertices.size() - 1, vertices.size() / 2, &surface);
   }
 }
 
@@ -143,7 +147,9 @@ Graph::Graph(std::vector<Graph *> &graphs) {
     for (int j = 0; j < graphs[i]->adjList.getVertexCount(); j++) {
       for (int k = 0; k < graphs[i]->adjList.getNeighbours(j).size(); k++) {
         this->adjList.addEdge(
-            newIndices[j], newIndices[graphs[i]->adjList.getNeighbours(j)[k]]);
+            newIndices[j],
+            newIndices[graphs[i]->adjList.getNeighbours(j)[k]->v],
+            graphs[i]->adjList.getNeighbours(j)[k]->baseSurface);
       }
     }
   }
@@ -154,10 +160,25 @@ Graph::Graph(Graph &graph, std::vector<int> &cycleVertices) {
     vertices.push_back(graph.vertices[cycleVertices[i]]);
     adjList.addVertex();
   }
-  for (int i = 1; i < this->vertices.size(); i++) {
-    adjList.addEdge(i - 1, i);
+  for (int i = 1; i < cycleVertices.size(); i++) {
+    std::vector<EdgeStruct *> neighbours =
+        graph.adjList.getNeighbours(cycleVertices[i - 1]);
+    for (int j = 0; j < neighbours.size(); j++) {
+      if (neighbours[j]->v == cycleVertices[i]) {
+        adjList.addEdge(i - 1, i, neighbours[j]->baseSurface);
+        break;
+      }
+    }
   }
-  adjList.addEdge(this->vertices.size() - 1, 0);
+
+  std::vector<EdgeStruct *> neighbours =
+      graph.adjList.getNeighbours(cycleVertices[cycleVertices.size() - 1]);
+  for (int i = 0; i < neighbours.size(); i++) {
+    if (neighbours[i]->v == cycleVertices[0]) {
+      adjList.addEdge(cycleVertices.size() - 1, 0, neighbours[i]->baseSurface);
+      break;
+    }
+  }
 }
 
 std::set<std::vector<int>> Graph::findCyclesWithNVertices(int N) {
@@ -180,11 +201,13 @@ int AdjecencyList::addVertex() {
   return 0;
 }
 
-void AdjecencyList::addEdge(int u, int v) {
-  adjList[u].push_back(v);
-  adjList[v].push_back(u);
+void AdjecencyList::addEdge(int u, int v, SurfaceC0* surf) {
+  adjList[u].push_back(new EdgeStruct(v,surf));
+  adjList[v].push_back(new EdgeStruct(u,surf));
 }
 
-std::vector<int> AdjecencyList::getNeighbours(int u) { return adjList[u]; }
+std::vector<EdgeStruct*> AdjecencyList::getNeighbours(int u) {
+  return adjList[u];
+}
 
 int AdjecencyList::getVertexCount() { return adjList.size(); }

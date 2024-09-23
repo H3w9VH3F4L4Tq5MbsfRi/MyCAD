@@ -80,6 +80,7 @@ void loadScene();
 void saveScene();
 void replaceCpsInCurves(Figure *newCp);
 void replaceCpsInSurfaces(Figure *newCp);
+int getSelectedCycleIdx();
 
 glm::vec3 centerTranslation(0.f);
 glm::vec3 centerScale(1.f);
@@ -245,17 +246,10 @@ int main() {
         surfaces[i]->Render(colorLoc, modelLoc, grayscale);
 
       if (selectedSurfaces.size() > 0 && cycles.size() > 0) {
-        int selecredCycleIndex = -1;
-        for (int i = 0; i < cycles.size(); i++) {
-          if (cycles[i]->selected) {
-            selecredCycleIndex = i;
-            break;
-          }
-        }
-        cycles[selecredCycleIndex]->Render(colorLoc, modelLoc, grayscale);
+        cycles[getSelectedCycleIdx()]->Render(colorLoc, modelLoc, grayscale);
 
         for (int i = 0; i < cycles.size(); i++) {
-          if (i == selecredCycleIndex)
+          if (i == getSelectedCycleIdx())
             continue;
           cycles[i]->Render(colorLoc, modelLoc, grayscale);
         }
@@ -975,21 +969,14 @@ int main() {
             ImGui::EndPopup();
           }
 
-          if (selectedSurfaces.size() > 0) 
-          {
+          if (selectedSurfaces.size() > 0) {
             ImGui::SeparatorText("Gregory patch options:");
             ImGui::Text("Places for patch: ");
             ImGui::SameLine();
             ImGui::Text(std::to_string(cycles.size()).c_str());
 
             if (cycles.size() > 1) {
-              int selectedCycle = -1;
-              for (int i = 0; i < cycles.size(); i++) {
-                if (cycles[i]->selected) {
-                  selectedCycle = i;
-                  break;
-                }
-              }
+              int selectedCycle = getSelectedCycleIdx();
               selectedCycle += 1;
 
               if (ImGui::SliderInt("Selection", &selectedCycle, 1,
@@ -1003,8 +990,28 @@ int main() {
 
             if (cycles.size() > 0) {
               if (ImGui::Button("Create Gregory patch")) {
-                // TODO: implement
-                std::cout << "Creating Gregory patch" << std::endl;
+                // prepare cps for gregory patch
+
+                auto getSurfaceName = [&](SurfaceC0 *surf) {
+                  for (int i = 0; i < surfaces.size(); i++) {
+                    if (surfaces[i] == surf)
+                      return surfaces[i]->name;
+                  }
+                  return std::string();
+                };
+
+                for (int i = 0; i < cycles[getSelectedCycleIdx()]->graph->vertices.size(); i++) {
+                  std::vector<EdgeStruct *> edges =
+                      cycles[getSelectedCycleIdx()]
+                          ->graph->adjList.getNeighbours(i);
+                  for (int j = 0; j < edges.size(); j++) {
+                    if (edges[j]->v == (i + 1) % cycles[getSelectedCycleIdx()]
+                                                     ->graph->vertices.size()) {
+                      std::cout << getSurfaceName(edges[j]->baseSurface).c_str()
+                                << std::endl;
+                    }
+                  }
+                }
               }
             }
           }
@@ -1480,4 +1487,13 @@ void replaceCpsInSurfaces(Figure *newCp)
       }
     }
   }
+}
+
+int getSelectedCycleIdx() {
+  for (int i = 0; i < cycles.size(); i++) {
+    if (cycles[i]->selected) {
+      return i;
+    }
+  }
+  return -1;
 }
