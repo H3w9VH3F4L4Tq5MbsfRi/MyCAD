@@ -386,240 +386,240 @@ int main() {
             ImGui::SameLine();
             if (ImGui::Button("Bezier Int")) {
               curves.push_back(new BezierInt(tessCpCountLoc, tessSegmentCountLoc,
-                                            tessSegmentIdxLoc, tessDivisionLoc));
+                                tessSegmentIdxLoc, tessDivisionLoc));
               curveCreation();
-            } 
-            // plane C0 
+            }
+            // plane C0
             if (ImGui::Button("Plane C0")) {
-                ImGui::OpenPopup("planeC0popup");
+              ImGui::OpenPopup("planeC0popup");
             }
             if (ImGui::BeginPopup("planeC0popup")) {
-                ImGui::SeparatorText("Plane C0 params:");
-                if (ImGui::InputInt("x segments", &PxSegments)) {
-                    PxSegments = PxSegments >= 1 ? PxSegments : 1;
-                }
-                if (ImGui::InputInt("z segments", &PzSegments)) {
-                    PzSegments = PzSegments >= 1 ? PzSegments : 1;
-                }
-                if (ImGui::InputFloat("length", &Pparam1, 0.01f, 1.f, "%.2f")) {
-                    Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
-                }
-                if (ImGui::InputFloat("width", &Pparam2, 0.01f, 1.f, "%.2f")) {
-                    Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
-                }
-                if (ImGui::Button("OK")) {
-                    ImGui::CloseCurrentPopup();
+              ImGui::SeparatorText("Plane C0 params:");
+              if (ImGui::InputInt("x segments", &PxSegments)) {
+                PxSegments = PxSegments >= 1 ? PxSegments : 1;
+              }
+              if (ImGui::InputInt("z segments", &PzSegments)) {
+                PzSegments = PzSegments >= 1 ? PzSegments : 1;
+              }
+              if (ImGui::InputFloat("length", &Pparam1, 0.01f, 1.f, "%.2f")) {
+                Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
+              }
+              if (ImGui::InputFloat("width", &Pparam2, 0.01f, 1.f, "%.2f")) {
+                Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
+              }
+              if (ImGui::Button("OK")) {
+                ImGui::CloseCurrentPopup();
 
                     SurfaceC0* plane = new SurfaceC0(cursor->GetPosition());
                     std::vector<Figure*> newFigures = plane->CalculatePlane(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc, 
                         tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
-                    for (int i = 0; i < newFigures.size(); i++) {
-                        figures.push_back(newFigures[i]);
-                    }
-                    surfaces.push_back(plane);
-                    deselectSurfaces();
-                    plane->selected = true;
-                    recalculateSelectedSurfaces();
-                    PxSegments = initXsegments;
-                    PzSegments = initZsegments;
-                    Pparam1 = initParam1;
-                    Pparam2 = initParam2;
+                for (int i = 0; i < newFigures.size(); i++) {
+                  figures.push_back(newFigures[i]);
                 }
+                surfaces.push_back(plane);
+                deselectSurfaces();
+                plane->selected = true;
+                recalculateSelectedSurfaces();
+                PxSegments = initXsegments;
+                PzSegments = initZsegments;
+                Pparam1 = initParam1;
+                Pparam2 = initParam2;
+              }
 
-                ImGui::EndPopup();
+              ImGui::EndPopup();
             }
             // cylinder C0
             ImGui::SameLine();
             if (ImGui::Button("Cylinder C0")) {
-                ImGui::OpenPopup("cylinderC0popup");
+              ImGui::OpenPopup("cylinderC0popup");
             }
             if (ImGui::BeginPopup("cylinderC0popup")) {
-                ImGui::SeparatorText("Cylinder C0 params:");
-                if (ImGui::InputInt("ambit segments", &PxSegments)) {
-                    PxSegments = PxSegments >= 1 ? PxSegments : 1;
-                }
-                if (ImGui::InputInt("y segments", &PzSegments)) {
-                    PzSegments = PzSegments >= 1 ? PzSegments : 1;
-                }
-                if (ImGui::InputFloat("radius", &Pparam1, 0.01f, 1.f, "%.2f")) {
-                    Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
-                }
-                if (ImGui::InputFloat("height", &Pparam2, 0.01f, 1.f, "%.2f")) {
-                    Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
-                }
-                if (ImGui::Button("OK")) {
-                    ImGui::CloseCurrentPopup();
+              ImGui::SeparatorText("Cylinder C0 params:");
+              if (ImGui::InputInt("ambit segments", &PxSegments)) {
+                PxSegments = PxSegments >= 1 ? PxSegments : 1;
+              }
+              if (ImGui::InputInt("y segments", &PzSegments)) {
+                PzSegments = PzSegments >= 1 ? PzSegments : 1;
+              }
+              if (ImGui::InputFloat("radius", &Pparam1, 0.01f, 1.f, "%.2f")) {
+                Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
+              }
+              if (ImGui::InputFloat("height", &Pparam2, 0.01f, 1.f, "%.2f")) {
+                Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
+              }
+              if (ImGui::Button("OK")) {
+                ImGui::CloseCurrentPopup();
 
                     SurfaceC0* cylinder = new SurfaceC0(cursor->GetPosition());
                     std::vector<Figure*> newFigures = cylinder->CalculateCylinder(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
                         tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
-                    for (int i = 0; i < newFigures.size(); i++) {
-                        figures.push_back(newFigures[i]);
-                    }
-                    surfaces.push_back(cylinder);
-                    deselectSurfaces();
-                    cylinder->selected = true;
-                    recalculateSelectedSurfaces();
-
-                    PxSegments = initXsegments;
-                    PzSegments = initZsegments;
-                    Pparam1 = initParam1;
-                    Pparam2 = initParam2;
+                for (int i = 0; i < newFigures.size(); i++) {
+                  figures.push_back(newFigures[i]);
                 }
+                surfaces.push_back(cylinder);
+                deselectSurfaces();
+                cylinder->selected = true;
+                recalculateSelectedSurfaces();
 
-                ImGui::EndPopup();
+                PxSegments = initXsegments;
+                PzSegments = initZsegments;
+                Pparam1 = initParam1;
+                Pparam2 = initParam2;
+              }
+
+              ImGui::EndPopup();
             }
             // plane C2
             if (ImGui::Button("Plane C2")) {
-                ImGui::OpenPopup("planeC2popup");
+              ImGui::OpenPopup("planeC2popup");
             }
             if (ImGui::BeginPopup("planeC2popup")) {
-                ImGui::SeparatorText("Plane C2 params:");
-                if (ImGui::InputInt("x segments", &PxSegments)) {
-                    PxSegments = PxSegments >= 1 ? PxSegments : 1;
-                }
-                if (ImGui::InputInt("z segments", &PzSegments)) {
-                    PzSegments = PzSegments >= 1 ? PzSegments : 1;
-                }
-                if (ImGui::InputFloat("length", &Pparam1, 0.01f, 1.f, "%.2f")) {
-                    Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
-                }
-                if (ImGui::InputFloat("width", &Pparam2, 0.01f, 1.f, "%.2f")) {
-                    Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
-                }
-                if (ImGui::Button("OK")) {
-                    ImGui::CloseCurrentPopup();
+              ImGui::SeparatorText("Plane C2 params:");
+              if (ImGui::InputInt("x segments", &PxSegments)) {
+                PxSegments = PxSegments >= 1 ? PxSegments : 1;
+              }
+              if (ImGui::InputInt("z segments", &PzSegments)) {
+                PzSegments = PzSegments >= 1 ? PzSegments : 1;
+              }
+              if (ImGui::InputFloat("length", &Pparam1, 0.01f, 1.f, "%.2f")) {
+                Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
+              }
+              if (ImGui::InputFloat("width", &Pparam2, 0.01f, 1.f, "%.2f")) {
+                Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
+              }
+              if (ImGui::Button("OK")) {
+                ImGui::CloseCurrentPopup();
 
                     SurfaceC0* plane = new SurfaceC2(cursor->GetPosition());
                     std::vector<Figure*> newFigures = plane->CalculatePlane(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
                         tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
-                    for (int i = 0; i < newFigures.size(); i++) {
-                        figures.push_back(newFigures[i]);
-                    }
-                    surfaces.push_back(plane);
-                    deselectSurfaces();
-                    plane->selected = true;
-                    recalculateSelectedSurfaces();
-
-                    PxSegments = initXsegments;
-                    PzSegments = initZsegments;
-                    Pparam1 = initParam1;
-                    Pparam2 = initParam2;
+                for (int i = 0; i < newFigures.size(); i++) {
+                  figures.push_back(newFigures[i]);
                 }
+                surfaces.push_back(plane);
+                deselectSurfaces();
+                plane->selected = true;
+                recalculateSelectedSurfaces();
 
-                ImGui::EndPopup();
+                PxSegments = initXsegments;
+                PzSegments = initZsegments;
+                Pparam1 = initParam1;
+                Pparam2 = initParam2;
+              }
+
+              ImGui::EndPopup();
             }
             // cylinder C2
             ImGui::SameLine();
             if (ImGui::Button("Cylinder C2")) {
-                ImGui::OpenPopup("cylinderC2popup");
+              ImGui::OpenPopup("cylinderC2popup");
             }
             if (ImGui::BeginPopup("cylinderC2popup")) {
-                ImGui::SeparatorText("Cylinder C2 params:");
-                if (ImGui::InputInt("ambit segments", &PxSegments)) {
-                    PxSegments = PxSegments >= 3 ? PxSegments : 3;
-                }
-                if (ImGui::InputInt("y segments", &PzSegments)) {
-                    PzSegments = PzSegments >= 1 ? PzSegments : 1;
-                }
-                if (ImGui::InputFloat("radius", &Pparam1, 0.01f, 1.f, "%.2f")) {
-                    Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
-                }
-                if (ImGui::InputFloat("height", &Pparam2, 0.01f, 1.f, "%.2f")) {
-                    Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
-                }
-                if (ImGui::Button("OK")) {
-                    ImGui::CloseCurrentPopup();
+              ImGui::SeparatorText("Cylinder C2 params:");
+              if (ImGui::InputInt("ambit segments", &PxSegments)) {
+                PxSegments = PxSegments >= 3 ? PxSegments : 3;
+              }
+              if (ImGui::InputInt("y segments", &PzSegments)) {
+                PzSegments = PzSegments >= 1 ? PzSegments : 1;
+              }
+              if (ImGui::InputFloat("radius", &Pparam1, 0.01f, 1.f, "%.2f")) {
+                Pparam1 = Pparam1 >= 0.01f ? Pparam1 : 0.01f;
+              }
+              if (ImGui::InputFloat("height", &Pparam2, 0.01f, 1.f, "%.2f")) {
+                Pparam2 = Pparam2 >= 0.01f ? Pparam2 : 0.01f;
+              }
+              if (ImGui::Button("OK")) {
+                ImGui::CloseCurrentPopup();
 
                     SurfaceC0* cylinder = new SurfaceC2(cursor->GetPosition());
                     std::vector<Figure*> newFigures = cylinder->CalculateCylinder(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
                         tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
-                    for (int i = 0; i < newFigures.size(); i++) {
-                        figures.push_back(newFigures[i]);
-                    }
-                    surfaces.push_back(cylinder);
-                    deselectSurfaces();
-                    cylinder->selected = true;
-                    recalculateSelectedSurfaces();
-
-                    PxSegments = initXsegments;
-                    PzSegments = initZsegments;
-                    Pparam1 = initParam1;
-                    Pparam2 = initParam2;
+                for (int i = 0; i < newFigures.size(); i++) {
+                  figures.push_back(newFigures[i]);
                 }
+                surfaces.push_back(cylinder);
+                deselectSurfaces();
+                cylinder->selected = true;
+                recalculateSelectedSurfaces();
 
-                ImGui::EndPopup();
+                PxSegments = initXsegments;
+                PzSegments = initZsegments;
+                Pparam1 = initParam1;
+                Pparam2 = initParam2;
+              }
+
+              ImGui::EndPopup();
             }
           }
 
 
           ImGui::BeginChild("figures", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y * 0.5f), ImGuiChildFlags_Border, ImGuiWindowFlags_HorizontalScrollbar);
            
-              // surface selection
-		      if (surfaces.size() > 0) {
-			      ImGui::SeparatorText("Surfaces");
-		      }
-		      for (int i = 0; i < surfaces.size(); i++) {
-                  if (ImGui::Selectable(surfaces[i]->name.c_str(),
+          // surface selection
+          if (surfaces.size() > 0) {
+            ImGui::SeparatorText("Surfaces");
+          }
+          for (int i = 0; i < surfaces.size(); i++) {
+            if (ImGui::Selectable(surfaces[i]->name.c_str(),
                                         &surfaces[i]->selected)) 
                   {
                     if (!ImGui::GetIO().KeyShift) 
                     {
-                      bool temp = surfaces[i]->selected;
+                bool temp = surfaces[i]->selected;
                       std::for_each(surfaces.begin(),
                                     surfaces.end(),
-                                    [](SurfaceC0 *s) {
-                                      s->selected = false;
-                                      ;
-                                    });
-                      surfaces[i]->selected = temp;
-                    }
-                    recalculateSelectedSurfaces();
-                  }
-		      }
-          
-              // curves selection
-              if (curves.size() > 0) {
-                ImGui::SeparatorText("Curves");
+                              [](SurfaceC0 *s) {
+                                s->selected = false;
+                                ;
+                              });
+                surfaces[i]->selected = temp;
               }
-              for (int i = 0; i < curves.size(); i++) {
-                if (ImGui::Selectable(curves[i]->name.c_str(),
-                                      &curves[i]->selected)) {
-                  bool temp = curves[i]->selected;
-                  std::for_each(curves.begin(), curves.end(), [](Figure *f) {
+              recalculateSelectedSurfaces();
+            }
+          }
+
+          // curves selection
+          if (curves.size() > 0) {
+            ImGui::SeparatorText("Curves");
+          }
+          for (int i = 0; i < curves.size(); i++) {
+            if (ImGui::Selectable(curves[i]->name.c_str(),
+                                  &curves[i]->selected)) {
+              bool temp = curves[i]->selected;
+              std::for_each(curves.begin(), curves.end(), [](Figure *f) {
                     f->selected = false;;});
-                  curves[i]->selected = temp;
+              curves[i]->selected = temp;
 
-                  if (!temp) {
-                    deselectCurve();
-                  } else {
-                    selectedCurveIdx = i;
-                  }
-
-                  recalculateSelected();
-                }
-              }
-              // other figures selection
-              if (figures.size() > 0 && currentMenuItem != 4) {
-                ImGui::SeparatorText("Other figures");
-
-                for (int i = 0; i < figures.size(); i++) {
-                  if (ImGui::Selectable(figures[i]->name.c_str(),
-                                        &figures[i]->selected)) {
-                    if (!ImGui::GetIO().KeyShift) {
-                      bool temp = figures[i]->selected;
-                      std::for_each(figures.begin(), figures.end(), [](Figure *f) {
-                        f->selected = false;
-                        ;
-                      });
-                      figures[i]->selected = temp;
-                    }
-                    recalculateSelected();
-                  }
-                }
+              if (!temp) {
+                deselectCurve();
+              } else {
+                selectedCurveIdx = i;
               }
 
-		  ImGui::EndChild();
+              recalculateSelected();
+            }
+          }
+          // other figures selection
+          if (figures.size() > 0 && currentMenuItem != 4) {
+            ImGui::SeparatorText("Other figures");
+
+            for (int i = 0; i < figures.size(); i++) {
+              if (ImGui::Selectable(figures[i]->name.c_str(),
+                                    &figures[i]->selected)) {
+                if (!ImGui::GetIO().KeyShift) {
+                  bool temp = figures[i]->selected;
+                  std::for_each(figures.begin(), figures.end(), [](Figure *f) {
+                    f->selected = false;
+                    ;
+                  });
+                  figures[i]->selected = temp;
+                }
+                recalculateSelected();
+              }
+            }
+          }
+
+          ImGui::EndChild();
 
           // delete button
           if (selected.size() > 0 || selectedCurveIdx != -1 || selectedSurfaces.size() > 0) {
@@ -628,87 +628,87 @@ int main() {
             {
               if (!checkIfSelectedArePartOfSurface()) 
               {
-                  updateCurvesSelectedChange(true);
-                  for (int i = selected.size() - 1; i >= 0; i--) {
-                      figures.erase(figures.begin() + selected[i]);
-                  }
-                  if (selectedCurveIdx != -1) {
-                      curves.erase(curves.begin() + selectedCurveIdx);
-                      deselectCurve(true);
-                  }
-                  for (int i = selectedSurfaces.size() - 1; i >= 0; i--) {
-                    surfaces.erase(surfaces.begin() + selectedSurfaces[i]);
-                    recalculateSelectedSurfaces();
-                  }
-                  recalculateSelected(true);
+                updateCurvesSelectedChange(true);
+                for (int i = selected.size() - 1; i >= 0; i--) {
+                  figures.erase(figures.begin() + selected[i]);
+                }
+                if (selectedCurveIdx != -1) {
+                  curves.erase(curves.begin() + selectedCurveIdx);
+                  deselectCurve(true);
+                }
+                for (int i = selectedSurfaces.size() - 1; i >= 0; i--) {
+                  surfaces.erase(surfaces.begin() + selectedSurfaces[i]);
+                  recalculateSelectedSurfaces();
+                }
+                recalculateSelected(true);
               }
               else 
               {
-                  ImGui::OpenPopup("FailedToDelete");
+                ImGui::OpenPopup("FailedToDelete");
               }
             }
           }
           if (ImGui::BeginPopup("FailedToDelete")) {
               ImGui::Text("At least one of the selected points is part of a surface!");
-              if (ImGui::Button("OK")) {
-                  ImGui::CloseCurrentPopup();
-              }
-              ImGui::EndPopup();
+            if (ImGui::Button("OK")) {
+              ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
           }
 
           if (((selectedCurveIdx != -1) != (selectedSurfaces.size() == 1)) && selected.size() == 0) {
-              // delete complex figure with all its control points
-			  ImGui::SameLine();
-			  if (ImGui::Button("Delete with cps")) {
+            // delete complex figure with all its control points
+            ImGui::SameLine();
+            if (ImGui::Button("Delete with cps")) {
                   std::vector<Figure*> cpsToDelete;
-				  if (selectedCurveIdx != -1) {
-					  cpsToDelete = curves[selectedCurveIdx]->GetControlPoints();
-					  curves.erase(curves.begin() + selectedCurveIdx);
-					  deselectCurve(true);
-				  }
-                  if (selectedSurfaces.size() == 1) {
-					  cpsToDelete = surfaces[selectedSurfaces[0]]->GetControlPoints();
-                      surfaces.erase(surfaces.begin() + selectedSurfaces[0]);
-                      recalculateSelectedSurfaces();
-				  }
-				  for (int i = 0; i < cpsToDelete.size(); i++) 
-					  for (int j = 0; j < figures.size(); j++) 
+              if (selectedCurveIdx != -1) {
+                cpsToDelete = curves[selectedCurveIdx]->GetControlPoints();
+                curves.erase(curves.begin() + selectedCurveIdx);
+                deselectCurve(true);
+              }
+              if (selectedSurfaces.size() == 1) {
+                cpsToDelete = surfaces[selectedSurfaces[0]]->GetControlPoints();
+                surfaces.erase(surfaces.begin() + selectedSurfaces[0]);
+                recalculateSelectedSurfaces();
+              }
+              for (int i = 0; i < cpsToDelete.size(); i++)
+                for (int j = 0; j < figures.size(); j++)
                           if (cpsToDelete[i] == figures[j]) 
                           {
-                              figures.erase(figures.begin() + j);
-                              break;
-                          }
+                    figures.erase(figures.begin() + j);
+                    break;
+                  }
 
-				  recalculateSelected(true);
-			  }
-			  // select all control points
-			  if (ImGui::Button("Select all cps")) {
-				  if (selectedCurveIdx != -1) {
+              recalculateSelected(true);
+            }
+            // select all control points
+            if (ImGui::Button("Select all cps")) {
+              if (selectedCurveIdx != -1) {
 					  std::vector<Figure*> cps = curves[selectedCurveIdx]->GetControlPoints();
-					  for (int i = 0; i < cps.size(); i++) {
-						  cps[i]->selected = true;
-					  }
-                      deselectCurve();
-				  }
-				  if (selectedSurfaces.size() == 1) {
+                for (int i = 0; i < cps.size(); i++) {
+                  cps[i]->selected = true;
+                }
+                deselectCurve();
+              }
+              if (selectedSurfaces.size() == 1) {
 					  std::vector<Figure*> cps = surfaces[selectedSurfaces[0]]->GetControlPoints();
-					  for (int i = 0; i < cps.size(); i++) {
-						  cps[i]->selected = true;
-					  }
-                      deselectSurfaces();
-				  }
-				  recalculateSelected();
-			  }
-		  }
+                for (int i = 0; i < cps.size(); i++) {
+                  cps[i]->selected = true;
+                }
+                deselectSurfaces();
+              }
+              recalculateSelected();
+            }
+          }
 
 		  if (selected.size() != 0 || selectedCurveIdx != -1 || selectedSurfaces.size() != 0) {
-              ImGui::SameLine();
-			  if (ImGui::Button("Deselect all")) {
-				  deselectFigures();
-                  deselectCurve();
-                  deselectSurfaces();
-			  }
-		  }
+            ImGui::SameLine();
+            if (ImGui::Button("Deselect all")) {
+              deselectFigures();
+              deselectCurve();
+              deselectSurfaces();
+            }
+          }
 
           // add points to curve button
           if (selected.size() > 0 && selectedCurveIdx != -1 &&
@@ -729,16 +729,16 @@ int main() {
           if (selected.size() == 1 && selectedCurveIdx == -1 &&
               selectedSurfaces.size() == 0) 
           {
-              ImGui::Separator();
-              // change name window
-              ImGui::InputText("Change name", &figures[selected[0]]->name);
-              // display selected item position
-              center->SetPosition(figures[selected[0]]->GetPosition());
-              // display selected item menu
-              if (figures[selected[0]]->CreateImgui()) {
-                updateCurvesSelectedChange();
-				updateSurfacesSelectedChange();
-              }
+            ImGui::Separator();
+            // change name window
+            ImGui::InputText("Change name", &figures[selected[0]]->name);
+            // display selected item position
+            center->SetPosition(figures[selected[0]]->GetPosition());
+            // display selected item menu
+            if (figures[selected[0]]->CreateImgui()) {
+              updateCurvesSelectedChange();
+              updateSurfacesSelectedChange();
+            }
           }
           if (selected.size() == 0 && selectedCurveIdx != -1 &&
               selectedSurfaces.size() == 0 && currentMenuItem != 4) 
@@ -760,11 +760,11 @@ int main() {
 
           if (selected.size() == 0 && selectedCurveIdx == -1 &&
               selectedSurfaces.size() == 1) {
-              ImGui::Separator();
-              // change name window
+            ImGui::Separator();
+            // change name window
               ImGui::InputText("Change name", &surfaces[selectedSurfaces[0]]->name);
-              // display selected surface menu
-              surfaces[selectedSurfaces[0]]->CreateImgui();
+            // display selected surface menu
+            surfaces[selectedSurfaces[0]]->CreateImgui();
           }
 
           // multiple figures merging & manipulation
@@ -785,40 +785,40 @@ int main() {
 
             bool change = false;
             // translation
-			ImGui::SeparatorText("Center translation");
+            ImGui::SeparatorText("Center translation");
 			if (ImGui::InputFloat("cX", &centerTranslation.x, 0.01f, 1.f, "%.2f")) {
-				change = true;
-                recalculateCenter();
-				for (int i = 0; i < selected.size(); i++) {
-                    figures[selected[i]]->CalculatePivotTransformation(
+              change = true;
+              recalculateCenter();
+              for (int i = 0; i < selected.size(); i++) {
+                figures[selected[i]]->CalculatePivotTransformation(
                         center->GetPosition(), centerScale, centerAngle, centerTranslation);
-				}
-			}
+              }
+            }
 			if (ImGui::InputFloat("cY", &centerTranslation.y, 0.01f, 1.f, "%.2f")) {
-				change = true;
-                recalculateCenter();
-				for (int i = 0; i < selected.size(); i++) {
-					figures[selected[i]]->CalculatePivotTransformation(
+              change = true;
+              recalculateCenter();
+              for (int i = 0; i < selected.size(); i++) {
+                figures[selected[i]]->CalculatePivotTransformation(
                         center->GetPosition(), centerScale, centerAngle, centerTranslation);
-				}
-			}
+              }
+            }
 			if (ImGui::InputFloat("cZ", &centerTranslation.z, 0.01f, 1.f, "%.2f")) {
-				change = true;
-                recalculateCenter();
-				for (int i = 0; i < selected.size(); i++) {
-					figures[selected[i]]->CalculatePivotTransformation(
+              change = true;
+              recalculateCenter();
+              for (int i = 0; i < selected.size(); i++) {
+                figures[selected[i]]->CalculatePivotTransformation(
                         center->GetPosition(), centerScale, centerAngle, centerTranslation);
-				}
-			}
-			if (ImGui::Button("Reset center translation")) {
-				change = true;
-				centerTranslation = glm::vec3(0.f);
-				recalculateCenter();
-				for (int i = 0; i < selected.size(); i++) {
-					figures[selected[i]]->CalculatePivotTransformation(
+              }
+            }
+            if (ImGui::Button("Reset center translation")) {
+              change = true;
+              centerTranslation = glm::vec3(0.f);
+              recalculateCenter();
+              for (int i = 0; i < selected.size(); i++) {
+                figures[selected[i]]->CalculatePivotTransformation(
 						center->GetPosition(), centerScale, centerAngle, centerTranslation);
-				}
-			}
+              }
+            }
 
             // scaling manipulation
             ImGui::SeparatorText("Center scale");
@@ -905,9 +905,9 @@ int main() {
                                             projR);
           };
           if (ImGui::InputFloat("Eye separation", &eyeSeparation, 0.01f, 1.f,
-              "%.2f")) {
+                                "%.2f")) {
             if (eyeSeparation < 0.f) eyeSeparation = 0.f;
-            
+
             camera->PrepareAnaglyphMatrices(convergence, eyeSeparation, projL,
                                             projR);
             CAD::displacemt(eyeSeparation, displacementL, displacementR);
@@ -919,11 +919,11 @@ int main() {
           ImGui::InputText("Target path", &filePath);
           if (ImGui::Button("Load")) {
             try {
-            if (!std::filesystem::exists(filePath))
+              if (!std::filesystem::exists(filePath))
                 throw std::exception("File does not exist!");
-            serializer.LoadScene(filePath);
-            loadScene();
-            ImGui::OpenPopup("LoadSuccessPopup");
+              serializer.LoadScene(filePath);
+              loadScene();
+              ImGui::OpenPopup("LoadSuccessPopup");
             } catch (const std::exception &e) {
               serializerErrorMsg = e.what();
               ImGui::OpenPopup("LoadSaveErrorPopup");
@@ -932,11 +932,11 @@ int main() {
           ImGui::SameLine();
           if (ImGui::Button("Save")) {
             try {
-            if (std::filesystem::exists(filePath))
+              if (std::filesystem::exists(filePath))
                 throw std::exception("File already exists!");
-            saveScene();
-            serializer.SaveScene(filePath);
-            ImGui::OpenPopup("SaveSuccessPopup");
+              saveScene();
+              serializer.SaveScene(filePath);
+              ImGui::OpenPopup("SaveSuccessPopup");
             } catch (const std::exception &e) {
               serializerErrorMsg = e.what();
               ImGui::OpenPopup("LoadSaveErrorPopup");
@@ -993,13 +993,30 @@ int main() {
                 // prepare cps for gregory patch
                 auto findPatchAndCpIdxs = [&](SurfaceC0 *surf, Figure *cp) {
                   std::vector<Figure *> cps = surf->GetControlPoints();
+                  std::vector<std::pair<int, int>> cpsIdxs =
+                      std::vector<std::pair<int, int>>();
                   for (int i = 0; i < cps.size(); i++) {
-                    if (cps[i] == cp) {
-                      return std::pair<int, int>(floor(i / 16), i % 16);
+                      cpsIdxs.push_back(std::pair<int, int>(i / 16, i % 16));
+                  }
+                  return cpsIdxs;
+                };
+
+                auto matchIndices = [](std::vector<std::pair<int, int>> start,
+                                       std::vector<std::pair<int, int>> end) {
+                  std::vector<std::pair<int, int>> results =
+                      std::vector<std::pair<int, int>>();
+                  for (int i = 0; i < start.size(); i++) {
+                    for (int j = 0; j < end.size(); j++) {
+                      if (start[i].first == end[j].first) {
+                        results.push_back(start[i]);
+                        results.push_back(end[j]);
+                      }
                     }
                   }
-                  return std::pair<int, int>(-1, -1);
+                  return results;
                 };
+
+                std::vector<Figure *> gregoryPatchCps = std::vector<Figure *>();
 
                 for (int i = 0;
                      i < cycles[getSelectedCycleIdx()]->graph->vertices.size();
@@ -1010,65 +1027,47 @@ int main() {
                   for (int j = 0; j < edges.size(); j++) {
                     if (edges[j]->v == (i + 1) % cycles[getSelectedCycleIdx()]
                                                      ->graph->vertices.size()) {
-                      std::tuple<int, int> resultStart = findPatchAndCpIdxs(
-                          edges[j]->baseSurface,
-                          cycles[getSelectedCycleIdx()]->graph->vertices[i]);
-                      std::tuple<int, int> resultEnd = findPatchAndCpIdxs(
-                          edges[j]->baseSurface,
-                          cycles[getSelectedCycleIdx()]
-                              ->graph->vertices[(i + 1) %
-                                                cycles[getSelectedCycleIdx()]
-                                                    ->graph->vertices.size()]);
+                      std::vector<std::pair<int, int>> startIndices =
+                          findPatchAndCpIdxs(edges[j]->baseSurface,
+                                             cycles[getSelectedCycleIdx()]
+                                                 ->graph->vertices[i]);
+                      std::vector<std::pair<int, int>> endIndices =
+                          findPatchAndCpIdxs(
+                              edges[j]->baseSurface,
+                              cycles[getSelectedCycleIdx()]->graph->vertices
+                                  [(i + 1) % cycles[getSelectedCycleIdx()]
+                                                 ->graph->vertices.size()]);
+                      std::vector<std::pair<int, int>> indicesMatch =
+                          matchIndices(startIndices, endIndices);
+                      std::pair<int, int> resultStart = indicesMatch[0];
+                      std::pair<int, int> resultEnd = indicesMatch[1];
 
-                      std::vector<Figure *> gregoryPatchCps =
-                          std::vector<Figure *>();
+                      int diff =
+                          std::get<1>(resultEnd) - std::get<1>(resultStart);
+                      for (int i = 0; i < 4; i++) {
+                        gregoryPatchCps.push_back(
+                            edges[j]->baseSurface->GetControlPoints()
+                                [std::get<0>(resultStart) * 16 +
+                                 std::get<1>(resultStart) + (diff / 3) * i]);
+                      }
 
-                      if (std::get<0>(resultStart) != -1 &&
-                          std::get<0>(resultStart) == std::get<0>(resultEnd)) {
-                        // same patch
-                        int diff =
-                            std::get<1>(resultEnd) - std::get<1>(resultStart);
-                        for (int i = 0; i < 4; i++) {
-                          int idx = std::get<0>(resultStart) * 16 +
-                                    std::get<1>(resultStart) + (diff / 3) * i;
-                          gregoryPatchCps.push_back(
-                              edges[j]->baseSurface->GetControlPoints()[idx]);
-                          std::cout << idx << " ";
-                        }
-                        std::cout << std::endl;
-                        int stepBack;
-                        if (abs(diff) == 12) {
-                          stepBack = 1;
-                        } else {
-                          // (abs(diff) == 3)
-                          stepBack = 4;
-                        }
-                        if (std::get<1>(resultStart) == 15 ||
-                            std::get<1>(resultEnd) == 15) {
-                          stepBack *= -1;
-                        }
-                        for (int i = 0; i < 4; i++) {
-                          int idx = std::get<0>(resultStart) * 16 +
-                                    std::get<1>(resultStart) + (diff / 3) * i +
-                                    stepBack;
-                          gregoryPatchCps.push_back(
-                              edges[j]->baseSurface->GetControlPoints()[idx]);
-                          std::cout << idx << " ";
-                        }
-                        std::cout << std::endl << std::endl;
+                      int stepBack;
+                      if (abs(diff) == 12) {
+                        stepBack = 1;
                       } else {
-                        std::cout << "Diffrent patches" << std::endl
-                                  << std::endl;
-                        std::cout << "Start: " << std::get<0>(resultStart)
-                                  << " " << std::get<1>(resultStart) << " "
-                                  << std::get<0>(resultStart) * 16 +
-                                         std::get<1>(resultStart)
-                                  << std::endl;
-                        std::cout << "End: " << std::get<0>(resultEnd) << " "
-                                  << std::get<1>(resultEnd) << " "
-                                  << std::get<0>(resultEnd) * 16 +
-                                         std::get<1>(resultEnd)
-                                  << std::endl;
+                        // (abs(diff) == 3)
+                        stepBack = 4;
+                      }
+                      if (std::get<1>(resultStart) == 15 ||
+                          std::get<1>(resultEnd) == 15) {
+                        stepBack *= -1;
+                      }
+                      for (int i = 0; i < 4; i++) {
+                        gregoryPatchCps.push_back(
+                            edges[j]->baseSurface->GetControlPoints()
+                                [std::get<0>(resultStart) * 16 +
+                                 std::get<1>(resultStart) + (diff / 3) * i +
+                                 stepBack]);
                       }
                     }
                   }
