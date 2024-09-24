@@ -17,7 +17,7 @@ public:
     void SetWidth(int nWidth) { width = nWidth; }
     void SetHeight(int nHeight) { height = nHeight; }
 
-	float speed = 0.1f;
+	float speed = 0.01f;
 	float sensitivity = 100.0f;
     const float speedStep = 0.01f;
 

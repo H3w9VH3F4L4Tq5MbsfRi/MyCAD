@@ -991,24 +991,85 @@ int main() {
             if (cycles.size() > 0) {
               if (ImGui::Button("Create Gregory patch")) {
                 // prepare cps for gregory patch
-
-                auto getSurfaceName = [&](SurfaceC0 *surf) {
-                  for (int i = 0; i < surfaces.size(); i++) {
-                    if (surfaces[i] == surf)
-                      return surfaces[i]->name;
+                auto findPatchAndCpIdxs = [&](SurfaceC0 *surf, Figure *cp) {
+                  std::vector<Figure *> cps = surf->GetControlPoints();
+                  for (int i = 0; i < cps.size(); i++) {
+                    if (cps[i] == cp) {
+                      return std::pair<int, int>(floor(i / 16), i % 16);
+                    }
                   }
-                  return std::string();
+                  return std::pair<int, int>(-1, -1);
                 };
 
-                for (int i = 0; i < cycles[getSelectedCycleIdx()]->graph->vertices.size(); i++) {
+                for (int i = 0;
+                     i < cycles[getSelectedCycleIdx()]->graph->vertices.size();
+                     i++) {
                   std::vector<EdgeStruct *> edges =
                       cycles[getSelectedCycleIdx()]
                           ->graph->adjList.getNeighbours(i);
                   for (int j = 0; j < edges.size(); j++) {
                     if (edges[j]->v == (i + 1) % cycles[getSelectedCycleIdx()]
                                                      ->graph->vertices.size()) {
-                      std::cout << getSurfaceName(edges[j]->baseSurface).c_str()
-                                << std::endl;
+                      std::tuple<int, int> resultStart = findPatchAndCpIdxs(
+                          edges[j]->baseSurface,
+                          cycles[getSelectedCycleIdx()]->graph->vertices[i]);
+                      std::tuple<int, int> resultEnd = findPatchAndCpIdxs(
+                          edges[j]->baseSurface,
+                          cycles[getSelectedCycleIdx()]
+                              ->graph->vertices[(i + 1) %
+                                                cycles[getSelectedCycleIdx()]
+                                                    ->graph->vertices.size()]);
+
+                      std::vector<Figure *> gregoryPatchCps =
+                          std::vector<Figure *>();
+
+                      if (std::get<0>(resultStart) != -1 &&
+                          std::get<0>(resultStart) == std::get<0>(resultEnd)) {
+                        // same patch
+                        int diff =
+                            std::get<1>(resultEnd) - std::get<1>(resultStart);
+                        for (int i = 0; i < 4; i++) {
+                          int idx = std::get<0>(resultStart) * 16 +
+                                    std::get<1>(resultStart) + (diff / 3) * i;
+                          gregoryPatchCps.push_back(
+                              edges[j]->baseSurface->GetControlPoints()[idx]);
+                          std::cout << idx << " ";
+                        }
+                        std::cout << std::endl;
+                        int stepBack;
+                        if (abs(diff) == 12) {
+                          stepBack = 1;
+                        } else {
+                          // (abs(diff) == 3)
+                          stepBack = 4;
+                        }
+                        if (std::get<1>(resultStart) == 15 ||
+                            std::get<1>(resultEnd) == 15) {
+                          stepBack *= -1;
+                        }
+                        for (int i = 0; i < 4; i++) {
+                          int idx = std::get<0>(resultStart) * 16 +
+                                    std::get<1>(resultStart) + (diff / 3) * i +
+                                    stepBack;
+                          gregoryPatchCps.push_back(
+                              edges[j]->baseSurface->GetControlPoints()[idx]);
+                          std::cout << idx << " ";
+                        }
+                        std::cout << std::endl << std::endl;
+                      } else {
+                        std::cout << "Diffrent patches" << std::endl
+                                  << std::endl;
+                        std::cout << "Start: " << std::get<0>(resultStart)
+                                  << " " << std::get<1>(resultStart) << " "
+                                  << std::get<0>(resultStart) * 16 +
+                                         std::get<1>(resultStart)
+                                  << std::endl;
+                        std::cout << "End: " << std::get<0>(resultEnd) << " "
+                                  << std::get<1>(resultEnd) << " "
+                                  << std::get<0>(resultEnd) * 16 +
+                                         std::get<1>(resultEnd)
+                                  << std::endl;
+                      }
                     }
                   }
                 }
