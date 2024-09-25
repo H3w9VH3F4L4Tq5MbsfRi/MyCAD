@@ -69,7 +69,33 @@ GregoryPatch::Calculate() const {
     }
   }
 
-  // TBC
+  std::vector<glm::vec3> cps = std::vector<glm::vec3>();
+  cps.resize(60);
+  for (int i = 0; i < 3; i++) {
+    int offset = i * 20;
+    int nextIdx = (i + 1) % 3;
+
+    cps[0 + offset] = T[i * 2];                                     // 0
+    cps[1 + offset] = 2.f * T[i * 2] - T[i * 2 + 1];                // 1
+    // 2
+    // 3
+    cps[4 + offset] = S[i * 4 + 1];                                 // 4
+    cps[5 + offset] = 2.f * S[i * 4 + 1] - S[i * 4 + 3];            // 5
+    cps[6 + offset] = cps[5 + offset];                              // 6
+    // 7
+    // 8
+    // 9
+    cps[10 + offset] = R[i * 6 + 2];                                // 10
+    cps[11 + offset] = 2.f * R[i * 6 + 2] - R[i * 6 + 5];           // 11
+    cps[12 + offset] = 2.f * R[nextIdx * 6] - R[nextIdx * 6 + 3];   // 12
+    cps[13 + offset] = 2.f * S[nextIdx * 4] - S[nextIdx * 4 + 2];   // 13
+    cps[14 + offset] = cps[13 + offset];                            // 14
+    cps[15 + offset] = 2.f * T[nextIdx * 2] - T[nextIdx * 2 + 1];   // 15
+    cps[16 + offset] = controlPoints[nextIdx * 8]->GetPosition();   // 16
+    cps[17 + offset] = R[nextIdx * 6];                              // 17
+    cps[18 + offset] = S[nextIdx * 4];                              // 18
+    cps[19 + offset] = T[nextIdx * 2];                              // 19
+  }
 
   std::vector<GLfloat> vertices;
   std::vector<GLuint> indices;
