@@ -35,6 +35,7 @@
 #include <filesystem>
 #include "Graph.h"
 #include "polyline.h"
+#include <gregoryPatch.h>
 
 const float near = 0.1f;
 const float far = 100.0f;
@@ -1072,6 +1073,8 @@ int main() {
                     }
                   }
                 }
+                // temp
+                GregoryPatch *gp = new GregoryPatch(gregoryPatchCps);
               }
             }
           }

@@ -123,6 +123,9 @@
     <ClCompile Include="Classes\polyline.cpp">
       <Filter>Source Files\figures</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\gregoryPatch.cpp">
+      <Filter>Source Files\figures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -210,6 +213,9 @@
       <Filter>Header Files\assets</Filter>
     </ClInclude>
     <ClInclude Include="Classes\polyline.h">
+      <Filter>Header Files\figures</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\gregoryPatch.h">
       <Filter>Header Files\figures</Filter>
     </ClInclude>
   </ItemGroup>
