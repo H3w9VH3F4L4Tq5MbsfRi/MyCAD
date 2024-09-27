@@ -111,6 +111,34 @@ GregoryPatch::Calculate() const {
     cps[9 + offset] = (2.f * Q[nextIdx] + P) / 3.f;                 // 9
   }
 
+  for (int i = 0; i < 3; i++) {
+    int offset = i * 20;
+    int nextIdx = (i + 1) % 3;
+    int nextOffset = nextIdx * 20;
+
+    std::vector<glm::vec3> G0 = std::vector<glm::vec3>();
+    std::vector<glm::vec3> G1 = std::vector<glm::vec3>();
+    std::vector<glm::vec3> G2 = std::vector<glm::vec3>();
+    glm::vec3 A;
+    std::vector<glm::vec3> B = std::vector<glm::vec3>();
+
+
+    G0.push_back(cps[4 + offset] - cps[0 + offset]);
+    G0.push_back(cps[18 + offset] - cps[19 + offset]);
+    
+    A = cps[3 + nextOffset] - cps[9 + nextOffset];
+    B.push_back(cps[9 + offset] - cps[3 + offset]);
+    B.push_back(cps[2 + offset] - cps[3 + offset]);
+
+    for (int j = 0; j < 2; j++) {
+      G2.push_back((A + B[j]) / 2.f);
+      G1.push_back((G0[j] + G2[j]) / 2.f);
+
+      // replace with Bezier interpolation
+      cps[7 + j + offset] = (2.f * G1[j] + G2[j]) / 3.f;              // 7 & 8
+    }
+  }
+
 
   std::vector<GLfloat> vertices;
   std::vector<GLuint> indices;
