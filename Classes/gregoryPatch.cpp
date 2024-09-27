@@ -70,6 +70,7 @@ GregoryPatch::Calculate() const {
   }
 
   std::vector<glm::vec3> cps = std::vector<glm::vec3>();
+  std::vector<glm::vec3> Q = std::vector<glm::vec3>();
   cps.resize(60);
   for (int i = 0; i < 3; i++) {
     int offset = i * 20;
@@ -95,7 +96,21 @@ GregoryPatch::Calculate() const {
     cps[17 + offset] = R[nextIdx * 6];                              // 17
     cps[18 + offset] = S[nextIdx * 4];                              // 18
     cps[19 + offset] = T[nextIdx * 2];                              // 19
+
+    Q.push_back((3.f * cps[1 + offset] - cps[0 + offset]) / 2.f); // Q
   }
+
+  glm::vec3 P = (Q[0] + Q[1] + Q[2]) / 3.f;
+
+  for (int i = 0; i < 3; i++) {
+    int offset = i * 20;
+    int nextIdx = (i + 1) % 3;
+
+    cps[2 + offset] = (2.f * Q[i] + P) / 3.f;                       // 2
+    cps[3 + offset] = P;                                            // 3
+    cps[9 + offset] = (2.f * Q[nextIdx] + P) / 3.f;                 // 9
+  }
+
 
   std::vector<GLfloat> vertices;
   std::vector<GLuint> indices;
