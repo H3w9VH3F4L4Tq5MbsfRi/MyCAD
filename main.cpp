@@ -120,6 +120,7 @@ bool renderGrid = true;
 std::string serializerErrorMsg = "";
 
 std::vector<Polyline*> cycles;
+std::vector<GregoryPatch*> patches;
 
 int main() { 
     // initial values
@@ -253,6 +254,12 @@ int main() {
           if (i == getSelectedCycleIdx())
             continue;
           cycles[i]->Render(colorLoc, modelLoc, grayscale);
+        }
+      }
+
+      for (int i = 0; i < patches.size(); i++) {
+        if (patches[i]->selected) {
+          patches[i]->Render(colorLoc, modelLoc, grayscale);
         }
       }
 
@@ -997,7 +1004,9 @@ int main() {
                   std::vector<std::pair<int, int>> cpsIdxs =
                       std::vector<std::pair<int, int>>();
                   for (int i = 0; i < cps.size(); i++) {
+                    if (cp == cps[i]) {
                       cpsIdxs.push_back(std::pair<int, int>(i / 16, i % 16));
+                    }
                   }
                   return cpsIdxs;
                 };
@@ -1045,11 +1054,11 @@ int main() {
 
                       int diff =
                           std::get<1>(resultEnd) - std::get<1>(resultStart);
-                      for (int i = 0; i < 4; i++) {
+                      for (int k = 0; k < 4; k++) {
                         gregoryPatchCps.push_back(
                             edges[j]->baseSurface->GetControlPoints()
                                 [std::get<0>(resultStart) * 16 +
-                                 std::get<1>(resultStart) + (diff / 3) * i]);
+                                 std::get<1>(resultStart) + (diff / 3) * k]);
                       }
 
                       int stepBack;
@@ -1063,18 +1072,18 @@ int main() {
                           std::get<1>(resultEnd) == 15) {
                         stepBack *= -1;
                       }
-                      for (int i = 0; i < 4; i++) {
+                      for (int k = 0; k < 4; k++) {
                         gregoryPatchCps.push_back(
                             edges[j]->baseSurface->GetControlPoints()
                                 [std::get<0>(resultStart) * 16 +
-                                 std::get<1>(resultStart) + (diff / 3) * i +
+                                 std::get<1>(resultStart) + (diff / 3) * k +
                                  stepBack]);
                       }
                     }
                   }
                 }
-                // temp
-                GregoryPatch *gp = new GregoryPatch(gregoryPatchCps);
+                deselectSurfaces();
+                patches.push_back(new GregoryPatch(gregoryPatchCps));
               }
             }
           }

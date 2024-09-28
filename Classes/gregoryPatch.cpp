@@ -1,4 +1,5 @@
 #include "gregoryPatch.h"
+#include <glm/gtc/type_ptr.hpp>
 
 const int renderSegments = 10;
 
@@ -69,8 +70,8 @@ GregoryPatch::Calculate() const {
     }
   }
 
-  std::vector<glm::vec3> cps = std::vector<glm::vec3>();
-  std::vector<glm::vec3> Q = std::vector<glm::vec3>();
+  std::vector<glm::vec3> cps;
+  std::vector<glm::vec3> Q;
   cps.resize(60);
   for (int i = 0; i < 3; i++) {
     int offset = i * 20;
@@ -116,12 +117,9 @@ GregoryPatch::Calculate() const {
     int nextIdx = (i + 1) % 3;
     int nextOffset = nextIdx * 20;
 
-    std::vector<glm::vec3> G0 = std::vector<glm::vec3>();
-    std::vector<glm::vec3> G1 = std::vector<glm::vec3>();
-    std::vector<glm::vec3> G2 = std::vector<glm::vec3>();
+    std::vector<glm::vec3> G0, G1, G2;
     glm::vec3 A;
-    std::vector<glm::vec3> B = std::vector<glm::vec3>();
-
+    std::vector<glm::vec3> B;
 
     G0.push_back(cps[4 + offset] - cps[0 + offset]);
     G0.push_back(cps[18 + offset] - cps[19 + offset]);
@@ -131,19 +129,34 @@ GregoryPatch::Calculate() const {
     B.push_back(cps[2 + offset] - cps[3 + offset]);
 
     for (int j = 0; j < 2; j++) {
+      int baseIdx = j == 0 ? 2 : 9;
       G2.push_back((A + B[j]) / 2.f);
       G1.push_back((G0[j] + G2[j]) / 2.f);
 
       // replace with Bezier interpolation
-      cps[7 + j + offset] = (2.f * G1[j] + G2[j]) / 3.f;              // 7 & 8
+      cps[7 + j + offset] = cps[baseIdx + offset] + (2.f * G1[j] + G2[j]) / 3.f;              // 7 & 8
     }
   }
-
 
   std::vector<GLfloat> vertices;
   std::vector<GLuint> indices;
 
-  // TODO
+  for (int i = 0; i < cps.size(); i++) {
+    vertices.push_back(cps[i].x);
+    vertices.push_back(cps[i].y);
+    vertices.push_back(cps[i].z);
+  }
+
+  std::vector<int> tempIndices = {0,  1,  6,  1,  2,  7,  2,  3,  9,  8,
+                                  9,  15, 14, 15, 19, 18, 13, 18, 17, 12,
+                                  17, 16, 10, 11, 10, 4,  5,  4,  0};
+
+  for (int i = 0; i < 3; i++) {
+    int offset = i * 20;
+    for (int j = 0; j < tempIndices.size(); j++) {
+      indices.push_back(tempIndices[j] + offset);
+    }
+  }
 
   return std::make_tuple(vertices, indices);
 }
@@ -154,7 +167,14 @@ GregoryPatch::GregoryPatch(std::vector<Figure *> controlPoints)
 }
 
 void GregoryPatch::Render(int colorLoc, int modelLoc, bool grayscale) {
-    // TODO
+  vao.Bind();
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+  glLineWidth(1.0f);
+
+  glUniform4fv(colorLoc, 1, glm::value_ptr(GetPolylineColor(grayscale)));
+  glDrawElements(GL_LINE_STRIP, indices_count, GL_UNSIGNED_INT, 0);
+
+  vao.Unbind();
 }
 
 void GregoryPatch::RenderTess(int colorLoc, int modelLoc, bool grayscale) {
