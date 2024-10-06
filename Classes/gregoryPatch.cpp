@@ -149,7 +149,7 @@ GregoryPatch::Calculate() const {
 
   std::vector<int> tempIndices = {0,  1,  6,  1,  2,  7,  2,  3,  9,  8,
                                   9,  15, 14, 15, 19, 18, 13, 18, 17, 12,
-                                  17, 16, 10, 11, 10, 4,  5,  4,  0};
+                                  17, 16, 10, 11, 10, 4,  5,  4};
 
   for (int i = 0; i < 3; i++) {
     int offset = i * 20;
@@ -172,7 +172,10 @@ void GregoryPatch::Render(int colorLoc, int modelLoc, bool grayscale) {
   glLineWidth(1.0f);
 
   glUniform4fv(colorLoc, 1, glm::value_ptr(GetPolylineColor(grayscale)));
-  glDrawElements(GL_LINE_STRIP, indices_count, GL_UNSIGNED_INT, 0);
+  for (int i = 0; i < 3; i++) {
+    glDrawElements(GL_LINE_LOOP, indices_count / 3, GL_UNSIGNED_INT,
+                   (void *)(28 * i * sizeof(GLuint)));
+  }
 
   vao.Unbind();
 }

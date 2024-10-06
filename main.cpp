@@ -258,9 +258,9 @@ int main() {
       }
 
       for (int i = 0; i < patches.size(); i++) {
-        if (patches[i]->selected) {
+        //if (patches[i]->selected) {
           patches[i]->Render(colorLoc, modelLoc, grayscale);
-        }
+        //}
       }
 
       // tessellation shader activation
