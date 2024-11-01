@@ -2,6 +2,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 const int renderSegments = 10;
+constexpr int tempIndices[] = { 0,  1,  6,  1,  2,  7,  2,  3,  9,  8,
+                                9,  15, 14, 15, 19, 18, 13, 18, 17, 12,
+                                17, 16, 10, 11, 10, 4,  5,  4 };
 
 bool GregoryPatch::CreateImgui() {
   bool change = false;
@@ -40,8 +43,16 @@ bool GregoryPatch::ReplaceControlPoint(int idx, Figure *cp) {
 }
 
 std::tuple<std::vector<GLfloat>, std::vector<GLuint>>
-GregoryPatch::InitializeAndCalculate(std::vector<Figure *> controlPoints) {
+GregoryPatch::InitializeAndCalculate(std::vector<Figure*> controlPoints, int cpCountLoc, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int gregoryLoc) {
   this->controlPoints = controlPoints;
+  this->cpCountLoc = cpCountLoc;
+  this->segmentCountLoc = segmentCountLoc;
+  this->segmentIdxLoc = segmentIdxLoc;
+  this->divisionLoc = divisionLoc;
+  this->otherAxisLoc = otherAxisLoc;
+  this->bsplineLoc = bsplineLoc;
+  this->gregoryLoc = gregoryLoc;
+
   return Calculate();
 }
 
@@ -147,13 +158,10 @@ GregoryPatch::Calculate() const {
     vertices.push_back(cps[i].z);
   }
 
-  std::vector<int> tempIndices = {0,  1,  6,  1,  2,  7,  2,  3,  9,  8,
-                                  9,  15, 14, 15, 19, 18, 13, 18, 17, 12,
-                                  17, 16, 10, 11, 10, 4,  5,  4};
-
   for (int i = 0; i < 3; i++) {
     int offset = i * 20;
-    for (int j = 0; j < tempIndices.size(); j++) {
+	// magic number 28 is the number of indices in tempIndices
+    for (int j = 0; j < 28; j++) {
       indices.push_back(tempIndices[j] + offset);
     }
   }
@@ -161,8 +169,8 @@ GregoryPatch::Calculate() const {
   return std::make_tuple(vertices, indices);
 }
 
-GregoryPatch::GregoryPatch(std::vector<Figure *> controlPoints)
-    : Figure(InitializeAndCalculate(controlPoints), "Gregory patch", glm::vec3(0.f), true) {
+GregoryPatch::GregoryPatch(std::vector<Figure*> controlPoints, int cpCountLoc, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int gregoryLocs)
+    : Figure(InitializeAndCalculate(controlPoints, cpCountLoc, segmentCountLoc, segmentIdxLoc, divisionLoc, otherAxisLoc, bsplineLoc, gregoryLoc), "Gregory patch", glm::vec3(0.f), true) {
   this->controlPoints = controlPoints;
 }
 
@@ -181,5 +189,31 @@ void GregoryPatch::Render(int colorLoc, int modelLoc, bool grayscale) {
 }
 
 void GregoryPatch::RenderTess(int colorLoc, int modelLoc, bool grayscale) {
-    // TODO
+    vao.Bind();
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniform4fv(colorLoc, 1, glm::value_ptr(GetColor(grayscale)));
+    glUniform1i(segmentCountLoc, renderSegments);
+    glLineWidth(3.0f);
+    glUniform1i(divisionLoc, division);
+
+    glPatchParameteri(GL_PATCH_VERTICES, indices_count / 3);
+    glUniform1i(cpCountLoc, indices_count / 3);
+
+    glUniform1i(bsplineLoc, false);
+    glUniform1i(gregoryLoc, true);
+
+    for (int i = 0; i < renderSegments; i++) {
+        glUniform1i(segmentIdxLoc, i);
+
+        for (int j = 0; j < 3; j++) {
+            glUniform1i(otherAxisLoc, false);
+            glDrawElements(GL_PATCHES, indices_count / 3, GL_UNSIGNED_INT, (void*)(28 * j * sizeof(GLuint)));
+
+            glUniform1i(otherAxisLoc, true);
+            glDrawElements(GL_PATCHES, indices_count / 3, GL_UNSIGNED_INT, (void*)(28 * j * sizeof(GLuint)));
+        }
+    }
+
+    vao.Unbind();
 }

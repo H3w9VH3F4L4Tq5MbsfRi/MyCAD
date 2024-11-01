@@ -3,7 +3,7 @@
 
 SurfaceC2::SurfaceC2(glm::vec3 position, std::string name) : SurfaceC0(position, name) {}
 
-std::vector<Figure*> SurfaceC2::CalculatePlane(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float length, float width)
+std::vector<Figure*> SurfaceC2::CalculatePlane(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float length, float width, int gregoryLoc)
 {
 	int lengthSegmentCount = xSegments + 2;
 	float segmentLength = length / lengthSegmentCount;
@@ -38,14 +38,14 @@ std::vector<Figure*> SurfaceC2::CalculatePlane(int cpCount, int segmentCountLoc,
             this->patches.push_back(new BicubicPatch(
                 cpCount, segmentCountLoc, segmentIdxLoc,
                 divisionLoc, otherAxisLoc, bsplineLoc, true, cps,
-                &this->division));
+                &this->division, gregoryLoc));
 		}
 	}
 
 	return newPoints;
 }
 
-std::vector<Figure*> SurfaceC2::CalculateCylinder(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float radius, float height)
+std::vector<Figure*> SurfaceC2::CalculateCylinder(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float radius, float height, int gregoryLoc)
 {
 	float segmentRadius = M_PI * 2.f / xSegments;
 	int heightSegmentCount = zSegments + 2;
@@ -95,7 +95,7 @@ std::vector<Figure*> SurfaceC2::CalculateCylinder(int cpCount, int segmentCountL
             this->patches.push_back(new BicubicPatch(
                 cpCount, segmentCountLoc, segmentIdxLoc,
                 divisionLoc, otherAxisLoc, bsplineLoc, true, cps,
-                &this->division));
+                &this->division, gregoryLoc));
 		}
 	}
 
@@ -128,7 +128,7 @@ int SurfaceC2::Serialize(MG1::Scene &scene, std::vector<uint32_t> cpsIdxs) {
 void SurfaceC2::CreateFromControlPoints(int cpCount, int segmentCountLoc,
                                         int segmentIdxLoc, int divisionLoc,
                                         int otherAxisLoc, int bsplineLoc,
-                                        std::vector<Figure *> cps) 
+                                        std::vector<Figure*> cps, int gregoryLoc) 
 {
   if (cps.size() % 16 != 0)
     return;
@@ -139,7 +139,7 @@ void SurfaceC2::CreateFromControlPoints(int cpCount, int segmentCountLoc,
                                    cps.begin() + i * 16 + 16);
     this->patches.push_back(new BicubicPatch(
         cpCount, segmentCountLoc, segmentIdxLoc, divisionLoc, otherAxisLoc,
-        bsplineLoc, true, cpsPatch, &this->division));
+        bsplineLoc, true, cpsPatch, &this->division, gregoryLoc));
   }
 }
 

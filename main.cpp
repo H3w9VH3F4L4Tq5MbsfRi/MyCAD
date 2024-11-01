@@ -114,7 +114,7 @@ int tessSurfaceModelLoc, tessSurfaceViewLoc, tessSurfaceProjLoc,
     tessSurfaceColorLoc, tessSurfaceCpCountLoc, tessSurfaceResolutionLoc,
     tessSurfaceDivisionLoc, tessSurfaceSegmentCountLoc,
     tessSurfaceSegmentIdxLoc, tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc,
-    tessSurfaceDisplacementLoc;
+    tessSurfaceDisplacementLoc, tessSurfaceGregoryLoc;
 
 bool renderGrid = true;
 std::string serializerErrorMsg = "";
@@ -189,6 +189,7 @@ int main() {
 	tessSurfaceOtherAxisLoc = glGetUniformLocation(tessSurfaceShaderProgram.ID, "otherAxis");
 	tessSurfaceBsplineLoc = glGetUniformLocation(tessSurfaceShaderProgram.ID, "bspline");
     tessSurfaceDisplacementLoc = glGetUniformLocation(tessSurfaceShaderProgram.ID, "displacement");
+	tessSurfaceGregoryLoc = glGetUniformLocation(tessSurfaceShaderProgram.ID, "gregory");
 
     // callbacks
     glfwSetWindowSizeCallback(window, window_size_callback);
@@ -299,6 +300,12 @@ int main() {
       for (int i = 0; i < surfaces.size(); i++)
         surfaces[i]->RenderTess(tessSurfaceColorLoc, tessSurfaceModelLoc,
                                 grayscale);
+
+	  // render patches with surface tessellation shader
+	  for (int i = 0; i < patches.size(); i++) {
+		  patches[i]->RenderTess(tessSurfaceColorLoc, tessSurfaceModelLoc,
+			  grayscale);
+	  }
     };
 
     while (!glfwWindowShouldClose(window)) 
@@ -420,7 +427,7 @@ int main() {
 
                     SurfaceC0* plane = new SurfaceC0(cursor->GetPosition());
                     std::vector<Figure*> newFigures = plane->CalculatePlane(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc, 
-                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
+                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2, tessSurfaceGregoryLoc);
                 for (int i = 0; i < newFigures.size(); i++) {
                   figures.push_back(newFigures[i]);
                 }
@@ -460,7 +467,7 @@ int main() {
 
                     SurfaceC0* cylinder = new SurfaceC0(cursor->GetPosition());
                     std::vector<Figure*> newFigures = cylinder->CalculateCylinder(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
-                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
+                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2, tessSurfaceGregoryLoc);
                 for (int i = 0; i < newFigures.size(); i++) {
                   figures.push_back(newFigures[i]);
                 }
@@ -500,7 +507,7 @@ int main() {
 
                     SurfaceC0* plane = new SurfaceC2(cursor->GetPosition());
                     std::vector<Figure*> newFigures = plane->CalculatePlane(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
-                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
+                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2, tessSurfaceGregoryLoc);
                 for (int i = 0; i < newFigures.size(); i++) {
                   figures.push_back(newFigures[i]);
                 }
@@ -541,7 +548,7 @@ int main() {
 
                     SurfaceC0* cylinder = new SurfaceC2(cursor->GetPosition());
                     std::vector<Figure*> newFigures = cylinder->CalculateCylinder(tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
-                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2);
+                        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, PxSegments, PzSegments, Pparam1, Pparam2, tessSurfaceGregoryLoc);
                 for (int i = 0; i < newFigures.size(); i++) {
                   figures.push_back(newFigures[i]);
                 }
@@ -1083,7 +1090,7 @@ int main() {
                   }
                 }
                 deselectSurfaces();
-                patches.push_back(new GregoryPatch(gregoryPatchCps));
+                patches.push_back(new GregoryPatch(gregoryPatchCps, tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc, tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc, tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, tessSurfaceGregoryLoc));
               }
             }
           }
@@ -1479,7 +1486,7 @@ void loadScene() {
     s->CreateFromControlPoints(
         tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc,
         tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
-        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, cps);
+        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, cps, tessSurfaceGregoryLoc);
     surfaces.push_back(s);
   }
 
@@ -1495,7 +1502,7 @@ void loadScene() {
     s->CreateFromControlPoints(
         tessSurfaceCpCountLoc, tessSurfaceSegmentCountLoc,
         tessSurfaceSegmentIdxLoc, tessSurfaceDivisionLoc,
-        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, cps);
+        tessSurfaceOtherAxisLoc, tessSurfaceBsplineLoc, cps, tessSurfaceGregoryLoc);
     surfaces.push_back(s);
   }
 }

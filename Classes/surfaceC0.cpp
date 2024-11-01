@@ -1,7 +1,7 @@
 #include "SurfaceC0.h"
 #include "point.h"
 
-std::vector<Figure*> SurfaceC0::CalculatePlane(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float length, float width)
+std::vector<Figure*> SurfaceC0::CalculatePlane(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float length, float width, int gregoryLoc)
 {
 	float patchLength = length / xSegments;
 	float patchLengthStep = patchLength / 3.f;
@@ -36,14 +36,14 @@ std::vector<Figure*> SurfaceC0::CalculatePlane(int cpCount, int segmentCountLoc,
             this->patches.push_back(new BicubicPatch(
                 cpCount, segmentCountLoc, segmentIdxLoc,
                 divisionLoc, otherAxisLoc, bsplineLoc, false, cps,
-                &this->division));
+                &this->division, gregoryLoc));
 		}
 	}
     this->ambit = new Graph(*this);
 	return newPoints;
 }
 
-std::vector<Figure*> SurfaceC0::CalculateCylinder(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float radius, float height) 
+std::vector<Figure*> SurfaceC0::CalculateCylinder(int cpCount, int segmentCountLoc, int segmentIdxLoc, int divisionLoc, int otherAxisLoc, int bsplineLoc, int xSegments, int zSegments, float radius, float height, int gregoryLoc) 
 {
 	float patchRadius = 2 * M_PI / xSegments;
 	float patchRadiusStep = patchRadius / 3.f;
@@ -93,7 +93,7 @@ std::vector<Figure*> SurfaceC0::CalculateCylinder(int cpCount, int segmentCountL
             this->patches.push_back(new BicubicPatch(
                 cpCount, segmentCountLoc, segmentIdxLoc,
                 divisionLoc, otherAxisLoc, bsplineLoc, false, cps,
-                &this->division));
+                &this->division, gregoryLoc));
 		}
 	}
     this->ambit = new Graph(*this);
@@ -127,7 +127,7 @@ int SurfaceC0::Serialize(MG1::Scene &scene, std::vector<uint32_t> cpsIdxs) {
 void SurfaceC0::CreateFromControlPoints(int cpCount, int segmentCountLoc,
                                         int segmentIdxLoc, int divisionLoc,
                                         int otherAxisLoc, int bsplineLoc,
-                                        std::vector<Figure*> cps) 
+                                        std::vector<Figure*> cps, int gregoryLoc) 
 {
   if (cps.size() % 16 != 0) return;
 
@@ -137,7 +137,7 @@ void SurfaceC0::CreateFromControlPoints(int cpCount, int segmentCountLoc,
                                    cps.begin() + i * 16 + 16);
     this->patches.push_back(new BicubicPatch(cpCount, segmentCountLoc, segmentIdxLoc,
                               divisionLoc, otherAxisLoc, bsplineLoc, false,
-                              cpsPatch, &this->division));
+                              cpsPatch, &this->division, gregoryLoc));
   }
   this->ambit = new Graph(*this);
 }

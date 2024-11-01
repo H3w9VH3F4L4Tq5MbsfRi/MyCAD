@@ -1,6 +1,6 @@
 #version 460 core
 
-layout (vertices = 16) out;
+layout (vertices = 28) out;
 
 uniform mat4 proj;
 uniform int cpCount;
