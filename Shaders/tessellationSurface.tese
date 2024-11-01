@@ -32,31 +32,30 @@ void main()
 
     vec3 result;
 
-    vec3 F0, F1, F2, F3;
-    F0 = (u * gl_in[2].gl_Position.xyz + v * gl_in[26].gl_Position.xyz) / (u + v);
-    F1 = (minU * gl_in[7].gl_Position.xyz + v * gl_in[9].gl_Position.xyz) / (minU + v);
-    F2 = (minU * gl_in[16].gl_Position.xyz + minV * gl_in[12].gl_Position.xyz) / (minU + minV);
-    F3 = (u * gl_in[19].gl_Position.xyz + minV * gl_in[23].gl_Position.xyz) / (u + minV);
+    vec3 F0 = (u * gl_in[6].gl_Position.xyz + v * gl_in[5].gl_Position.xyz) / (u + v);
+    vec3 F1 = (minU * gl_in[7].gl_Position.xyz + v * gl_in[8].gl_Position.xyz) / (minU + v);
+    vec3 F2 = (minU * gl_in[13].gl_Position.xyz + minV * gl_in[14].gl_Position.xyz) / (minU + minV);
+    vec3 F3 = (u * gl_in[12].gl_Position.xyz + minV * gl_in[11].gl_Position.xyz) / (u + minV);
 
-    vec3 p0 = gregory ? gl_in[21].gl_Position.xyz : gl_in[0].gl_Position.xyz;
-    vec3 p1 = gregory ? gl_in[18].gl_Position.xyz : gl_in[1].gl_Position.xyz;
-    vec3 p2 = gregory ? gl_in[15].gl_Position.xyz : gl_in[2].gl_Position.xyz;
-    vec3 p3 = gregory ? gl_in[14].gl_Position.xyz : gl_in[3].gl_Position.xyz;
+    vec3 p0 = gregory   ? gl_in[0].gl_Position.xyz  : gl_in[0].gl_Position.xyz;
+    vec3 p1 = gregory   ? gl_in[4].gl_Position.xyz  : gl_in[1].gl_Position.xyz;
+    vec3 p2 = gregory   ? gl_in[10].gl_Position.xyz : gl_in[2].gl_Position.xyz;
+    vec3 p3 = gregory   ? gl_in[16].gl_Position.xyz : gl_in[3].gl_Position.xyz;
 
-    vec3 p4 = gregory ? gl_in[22].gl_Position.xyz : gl_in[4].gl_Position.xyz;
-    vec3 p5 = gregory ? F3 : gl_in[5].gl_Position.xyz;
-    vec3 p6 = gregory ? F2 : gl_in[6].gl_Position.xyz;
-    vec3 p7 = gregory ? gl_in[11].gl_Position.xyz : gl_in[7].gl_Position.xyz;
+    vec3 p4 = gregory   ? gl_in[1].gl_Position.xyz  : gl_in[4].gl_Position.xyz;
+    vec3 p5 = gregory   ? F0                        : gl_in[5].gl_Position.xyz;
+    vec3 p6 = gregory   ? F3                        : gl_in[6].gl_Position.xyz;
+    vec3 p7 = gregory   ? gl_in[17].gl_Position.xyz : gl_in[7].gl_Position.xyz;
 
-    vec3 p8 = gregory ? gl_in[25].gl_Position.xyz : gl_in[8].gl_Position.xyz;
-    vec3 p9 = gregory ? F0 : gl_in[9].gl_Position.xyz;
-    vec3 p10 = gregory ? F1 : gl_in[10].gl_Position.xyz;
-    vec3 p11 = gregory ? gl_in[8].gl_Position.xyz : gl_in[11].gl_Position.xyz;
+    vec3 p8 = gregory   ? gl_in[2].gl_Position.xyz  : gl_in[8].gl_Position.xyz;
+    vec3 p9 = gregory   ? F1                        : gl_in[9].gl_Position.xyz;
+    vec3 p10 = gregory  ? F2                        : gl_in[10].gl_Position.xyz;
+    vec3 p11 = gregory  ? gl_in[18].gl_Position.xyz : gl_in[11].gl_Position.xyz;
 
-    vec3 p12 = gregory ? gl_in[0].gl_Position.xyz : gl_in[12].gl_Position.xyz;
-    vec3 p13 = gregory ? gl_in[1].gl_Position.xyz : gl_in[13].gl_Position.xyz;
-    vec3 p14 = gregory ? gl_in[4].gl_Position.xyz : gl_in[14].gl_Position.xyz;
-    vec3 p15 = gregory ? gl_in[7].gl_Position.xyz : gl_in[15].gl_Position.xyz;
+    vec3 p12 = gregory  ? gl_in[3].gl_Position.xyz  : gl_in[12].gl_Position.xyz;
+    vec3 p13 = gregory  ? gl_in[9].gl_Position.xyz  : gl_in[13].gl_Position.xyz;
+    vec3 p14 = gregory  ? gl_in[15].gl_Position.xyz : gl_in[14].gl_Position.xyz;
+    vec3 p15 = gregory  ? gl_in[19].gl_Position.xyz : gl_in[15].gl_Position.xyz;
 
     vec4 W_u, W_v;
 

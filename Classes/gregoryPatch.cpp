@@ -175,6 +175,9 @@ GregoryPatch::GregoryPatch(std::vector<Figure*> controlPoints, int cpCountLoc, i
 }
 
 void GregoryPatch::Render(int colorLoc, int modelLoc, bool grayscale) {
+  if (!showMesh)
+      return;
+
   vao.Bind();
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
   glLineWidth(1.0f);
@@ -197,8 +200,8 @@ void GregoryPatch::RenderTess(int colorLoc, int modelLoc, bool grayscale) {
     glLineWidth(3.0f);
     glUniform1i(divisionLoc, division);
 
-    glPatchParameteri(GL_PATCH_VERTICES, indices_count / 3);
-    glUniform1i(cpCountLoc, indices_count / 3);
+    glPatchParameteri(GL_PATCH_VERTICES,  20);
+    glUniform1i(cpCountLoc, 20);
 
     glUniform1i(bsplineLoc, false);
     glUniform1i(gregoryLoc, true);
@@ -208,10 +211,10 @@ void GregoryPatch::RenderTess(int colorLoc, int modelLoc, bool grayscale) {
 
         for (int j = 0; j < 3; j++) {
             glUniform1i(otherAxisLoc, false);
-            glDrawElements(GL_PATCHES, indices_count / 3, GL_UNSIGNED_INT, (void*)(28 * j * sizeof(GLuint)));
+            glDrawArrays(GL_PATCHES, 20 * j, 20);
 
             glUniform1i(otherAxisLoc, true);
-            glDrawElements(GL_PATCHES, indices_count / 3, GL_UNSIGNED_INT, (void*)(28 * j * sizeof(GLuint)));
+            glDrawArrays(GL_PATCHES, 20 * j, 20);
         }
     }
 
